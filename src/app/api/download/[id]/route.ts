@@ -20,8 +20,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     if (!hasAccess && new Date() <= dbFile.room.expiresAt) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const filePath = path.join(process.cwd(), dbFile.path);
+    const filePath = path.join(/* turbopackIgnore: true */ process.cwd(), dbFile.path);
     const fileBuffer = await fs.readFile(filePath);
 
     return new NextResponse(fileBuffer, {
