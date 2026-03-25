@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Room {
+  id        String   @id // Short code like A1B2C3
+  passcode  String   // Hashed passcode
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  files     File[]
+}
+
+model File {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name      String
+  size      Int
+  mimeType  String
+  path      String   // Local path or URL
+  createdAt DateTime @default(now())
+}
