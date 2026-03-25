@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
-import fs from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 export async function POST(req: Request) {
   try {
@@ -29,16 +28,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Room is invalid or expired" }, { status: 410 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const uploadDir = path.join(process.cwd(), "uploads", roomId);
-    
-    await fs.mkdir(uploadDir, { recursive: true });
-    
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const uniqueName = `${Date.now()}-${safeName}`;
-    const filePath = path.join(uploadDir, uniqueName);
-    
-    await fs.writeFile(filePath, buffer);
+    const uniqueName = `${roomId}/${Date.now()}-${safeName}`;
+
+    const blob = await put(uniqueName, file, {
+      access: "public",
+      contentType: file.type || "application/octet-stream",
+    });
 
     const dbFile = await prisma.file.create({
       data: {
@@ -46,7 +42,7 @@ export async function POST(req: Request) {
         name: file.name,
         size: file.size,
         mimeType: file.type,
-        path: `uploads/${roomId}/${uniqueName}`,
+        path: blob.url,
       },
     });
 
