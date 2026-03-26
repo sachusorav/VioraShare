@@ -14,7 +14,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-export function RoomDashboard({ initialFiles, roomId }: { initialFiles: PrismaFile[], roomId: string }) {
+export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFiles: PrismaFile[], roomId: string, expiresAt: string }) {
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   
   const { data } = useSWR(`/api/rooms/${roomId}`, fetcher, { 
@@ -87,6 +87,15 @@ export function RoomDashboard({ initialFiles, roomId }: { initialFiles: PrismaFi
 
   return (
     <div className="flex flex-col gap-6 flex-1">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+          Room {roomId}
+        </h1>
+        <p className="text-muted-foreground">
+          Expires at {new Date(expiresAt).toLocaleTimeString()}
+        </p>
+      </div>
+
       <div className="flex items-center gap-4">
         <Button variant="outline" onClick={copyRoomLink} className="bg-background/50 backdrop-blur">
           <Copy className="w-4 h-4 mr-2" />

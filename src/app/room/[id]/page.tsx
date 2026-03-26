@@ -39,18 +39,7 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
       <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] -z-10 pointer-events-none" />
       
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 pt-8 md:pt-12 relative z-10 flex flex-col h-full">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Room {room.id}
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Expires at {new Date(room.expiresAt).toLocaleTimeString()}
-            </p>
-          </div>
-        </div>
-        
-        <RoomDashboard initialFiles={room.files} roomId={room.id} />
+        <RoomDashboard initialFiles={room.files} roomId={room.id} expiresAt={room.expiresAt.toISOString()} />
         
         <div className="mt-auto pt-12 flex justify-center pb-8">
           <SocialLinks />
