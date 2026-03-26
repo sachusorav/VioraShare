@@ -13,15 +13,36 @@ model Room {
   createdAt DateTime @default(now())
   expiresAt DateTime
   files     File[]
+  notes     Note[]
+  messages  Message[]
 }
 
 model File {
+  id            String   @id @default(cuid())
+  roomId        String
+  room          Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name          String
+  size          Int
+  mimeType      String
+  path          String   // Local path or URL
+  createdAt     DateTime @default(now())
+  selfDestruct  Boolean  @default(false)
+  downloadCount Int      @default(0)
+}
+
+model Note {
   id        String   @id @default(cuid())
   roomId    String
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  name      String
-  size      Int
-  mimeType  String
-  path      String   // Local path or URL
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  content   String
+  author    String   @default("Anonymous")
   createdAt DateTime @default(now())
 }

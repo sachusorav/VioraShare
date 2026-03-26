@@ -1,28 +1,42 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
+import { del } from "@vercel/blob";
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
   try {
-    const { id } = await params;
-    const dbFile = await prisma.file.findUnique({
+    const file = await prisma.file.findUnique({
       where: { id },
-      include: { room: true },
     });
 
-    if (!dbFile) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    const cookieStore = await cookies();
-    const hasAccess = cookieStore.get(`viora_room_${dbFile.roomId}`);
-
-    if (!hasAccess && new Date() <= dbFile.room.expiresAt) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!file) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    // file.path now holds the Vercel Blob public URL
-    return NextResponse.redirect(dbFile.path);
+    // Increment download count
+    const updatedFile = await prisma.file.update({
+      where: { id },
+      data: { downloadCount: { increment: 1 } },
+    });
+
+    // Handle self-destruct logic
+    if (updatedFile.selfDestruct && updatedFile.downloadCount >= 1) {
+      // Delete from Vercel Blob
+      await del(file.path);
+      // Delete from Database
+      await prisma.file.delete({
+        where: { id },
+      });
+    }
+
+    // Redirect to the actual file URL
+    return NextResponse.redirect(file.path);
   } catch (error) {
     console.error("Download error:", error);
-    return NextResponse.json({ error: "Failed to download file" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to process download" }, { status: 500 });
   }
 }

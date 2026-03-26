@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Lock, KeyRound, UploadCloud, DownloadCloud } from "lucide-react";
+import { Loader2, Lock, KeyRound, UploadCloud, DownloadCloud, History, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner"; 
 
 export function HomeForms() {
@@ -17,6 +17,31 @@ export function HomeForms() {
   const joinParam = searchParams.get("join");
   
   const [activeTab, setActiveTab] = useState("create");
+  const [recentRooms, setRecentRooms] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Load recent rooms from localStorage
+    const saved = localStorage.getItem("viora_recent_rooms");
+    if (saved) {
+      try {
+        setRecentRooms(JSON.parse(saved));
+      } catch (e) {
+        setRecentRooms([]);
+      }
+    }
+  }, []);
+
+  const saveRecentRoom = (roomId: string) => {
+    const updated = [roomId, ...recentRooms.filter(id => id !== roomId)].slice(0, 5);
+    setRecentRooms(updated);
+    localStorage.setItem("viora_recent_rooms", JSON.stringify(updated));
+  };
+
+  const clearRecentRooms = () => {
+    setRecentRooms([]);
+    localStorage.removeItem("viora_recent_rooms");
+    toast.success("Recent rooms cleared");
+  };
 
   // Create Room State
   const [createPasscode, setCreatePasscode] = useState("");
@@ -55,6 +80,7 @@ export function HomeForms() {
       if (!res.ok) throw new Error(data.error || "Failed to create room");
       
       toast.success("Room created successfully!");
+      saveRecentRoom(data.roomId);
       router.push(`/room/${data.roomId}`);
     } catch (error: any) {
       toast.error(error.message);
@@ -83,6 +109,7 @@ export function HomeForms() {
       if (!res.ok) throw new Error(data.error || "Invalid Room ID or Passcode");
       
       toast.success("Joined room successfully!");
+      saveRecentRoom(joinRoomId);
       router.push(`/room/${joinRoomId}`);
     } catch (error: any) {
       toast.error(error.message);
@@ -187,6 +214,41 @@ export function HomeForms() {
           </form>
         </Card>
       </TabsContent>
+
+      {recentRooms.length > 0 && (
+        <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center">
+              <History className="w-3 h-3 mr-2" /> Recent Rooms
+            </h3>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearRecentRooms}
+              className="h-7 text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+            >
+              <Trash2 className="w-3 h-3 mr-1" /> Clear All
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {recentRooms.map((id) => (
+              <button
+                key={id}
+                onClick={() => router.push(`/room/${id}`)}
+                className="flex items-center justify-between p-3 rounded-xl bg-card/40 border border-border/40 hover:border-primary/50 hover:bg-muted/30 transition-all group backdrop-blur-sm"
+              >
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mr-3 text-primary font-bold text-xs">
+                    {id.substring(0, 1)}
+                  </div>
+                  <span className="font-heading font-bold text-sm">Room {id}</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </Tabs>
   );
 }
