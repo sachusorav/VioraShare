@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const roomId = formData.get("roomId") as string;
+    const selfDestruct = formData.get("selfDestruct") === "true";
 
     if (!file || !roomId) {
       return NextResponse.json({ error: "File and Room ID are required" }, { status: 400 });
