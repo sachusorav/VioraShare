@@ -15,7 +15,12 @@ import { QRCodeSVG } from 'qrcode.react';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFiles: PrismaFile[], roomId: string, expiresAt: string }) {
+  const [mounted, setMounted] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const { data } = useSWR(`/api/rooms/${roomId}`, fetcher, { 
     refreshInterval: 3000, 
@@ -92,7 +97,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
           Room {roomId}
         </h1>
         <p className="text-muted-foreground">
-          Expires at {new Date(expiresAt).toLocaleTimeString()}
+          Expires at {mounted ? new Date(expiresAt).toLocaleTimeString() : "..."}
         </p>
       </div>
 
