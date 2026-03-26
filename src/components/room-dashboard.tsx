@@ -22,7 +22,11 @@ import { motion, AnimatePresence } from "framer-motion";
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFiles: PrismaFile[], roomId: string, expiresAt: string }) {
+  const [mounted, setMounted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [selfDestruct, setSelfDestruct] = useState(false);
   const [activeTab, setActiveTab] = useState("files");
+  const [imageLoaded, setImageLoaded] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     setMounted(true);
