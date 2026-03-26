@@ -65,7 +65,7 @@ export default function TermsOfService() {
         </section>
 
         <footer className="pt-12 border-t border-white/10 text-center text-muted-foreground text-sm">
-          For legal inquiries, contact: <span className="text-white underline">legal@viorashare.online</span>
+          For legal inquiries, contact: <span className="text-white underline font-medium">heyimsachin009@gmail.com</span>
         </footer>
       </div>
     </main>

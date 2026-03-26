@@ -62,7 +62,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <footer className="pt-12 border-t border-white/10 text-center text-muted-foreground text-sm">
-          &copy; 2026 VioraShare by Sachin Kumar. All Rights Reserved.
+          &copy; 2026 VioraShare by Sachin Kumar. All Rights Reserved. For inquiries, contact <span className="text-white underline">heyimsachin009@gmail.com</span>
         </footer>
       </div>
     </main>
