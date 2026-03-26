@@ -22,13 +22,21 @@ import { motion, AnimatePresence } from "framer-motion";
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFiles: PrismaFile[], roomId: string, expiresAt: string }) {
-  const [mounted, setMounted] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
-  const [selfDestruct, setSelfDestruct] = useState(false);
+  const [activeTab, setActiveTab] = useState("files");
 
   useEffect(() => {
     setMounted(true);
+    // Detect tab from hash
+    const hash = window.location.hash.replace("#", "");
+    if (["files", "clipboard", "chat"].includes(hash)) {
+      setActiveTab(hash);
+    }
   }, []);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    window.location.hash = value;
+  };
   
   const { data } = useSWR(`/api/rooms/${roomId}`, fetcher, { 
     refreshInterval: 3000, 
@@ -134,7 +142,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
         </Dialog>
       </div>
 
-      <Tabs defaultValue="files" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="bg-muted/50 backdrop-blur mb-6">
           <TabsTrigger value="files">
             <File className="w-4 h-4 mr-2" />
@@ -199,15 +207,21 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
                   {liveFiles.map(f => (
                     <Card key={f.id} className="bg-card/60 backdrop-blur shadow-sm hover:shadow-md transition-all group overflow-hidden border-border/50">
                       <CardContent className="p-0">
-                        {/* Image Preview */}
+                        {/* Image Preview with Blur-up */}
                         {f.mimeType.startsWith('image/') && f.path && (
                           <div className="relative aspect-video w-full overflow-hidden bg-muted/20 group-hover:opacity-90 transition-opacity">
+                            {!imageLoaded[f.id] && (
+                              <div className="absolute inset-0 animate-pulse bg-muted-foreground/10 flex items-center justify-center">
+                                <ImageIcon className="w-8 h-8 opacity-20" />
+                              </div>
+                            )}
                             <Image 
                               src={f.path} 
                               alt={f.name} 
                               fill 
-                              className="object-cover"
+                              className={`object-cover transition-all duration-500 ${imageLoaded[f.id] ? 'scale-100 blur-0' : 'scale-110 blur-xl'}`}
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              onLoad={() => setImageLoaded(prev => ({ ...prev, [f.id]: true }))}
                             />
                           </div>
                         )}

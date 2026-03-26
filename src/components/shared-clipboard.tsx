@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy, Plus, Link as LinkIcon, StickyNote } from "lucide-react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function SharedClipboard({ roomId }: { roomId: string }) {
   const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { data, isLoading } = useSWR(`/api/rooms/${roomId}/notes`, fetcher, {
     refreshInterval: 5000
@@ -75,9 +75,8 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="bg-background/50 backdrop-blur"
-          disabled={isSubmitting}
         />
-        <Button type="submit" disabled={isSubmitting || !content.trim()}>
+        <Button type="submit" disabled={!content.trim()}>
           <Plus className="w-4 h-4 mr-2" />
           Add
         </Button>
@@ -92,48 +91,57 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
             <p>Your shared clipboard is empty.</p>
           </div>
         ) : (
-          notes.map((note: any) => (
-            <Card key={note.id} className="bg-card/60 backdrop-blur shadow-sm hover:shadow-md transition-all border-border/50 group">
-              <CardContent className="p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="p-2 bg-muted/50 rounded-lg shrink-0">
-                    {isUrl(note.content) ? (
-                      <LinkIcon className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <StickyNote className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    {isUrl(note.content) ? (
-                      <a 
-                        href={note.content} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="text-sm font-medium text-blue-500 hover:underline truncate block"
-                      >
-                        {note.content}
-                      </a>
-                    ) : (
-                      <p className="text-sm font-medium truncate" title={note.content}>
-                        {note.content}
-                      </p>
-                    )}
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {new Date(note.createdAt).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => copyToClipboard(note.content)}
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))
+          <AnimatePresence initial={false}>
+            {notes.map((note: any) => (
+              <motion.div
+                key={note.id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                layout
+              >
+                <Card className={`bg-card/60 backdrop-blur shadow-sm hover:shadow-md transition-all border-border/50 group ${note.id.startsWith('opt-') ? 'border-primary/40' : ''}`}>
+                  <CardContent className="p-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="p-2 bg-muted/50 rounded-lg shrink-0">
+                        {isUrl(note.content) ? (
+                          <LinkIcon className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-blue-500'}`} />
+                        ) : (
+                          <StickyNote className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        {isUrl(note.content) ? (
+                          <a 
+                            href={note.content} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="text-sm font-medium text-blue-500 hover:underline truncate block"
+                          >
+                            {note.content}
+                          </a>
+                        ) : (
+                          <p className="text-sm font-medium truncate" title={note.content}>
+                            {note.content}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {note.id.startsWith('opt-') ? "Saving..." : new Date(note.createdAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => copyToClipboard(note.content)}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
     </div>
