@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
@@ -40,22 +39,13 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
       
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 pt-8 md:pt-12 relative z-10 flex flex-col h-full">
         <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <Image 
-              src="/logo.png" 
-              alt="VioraShare Logo" 
-              width={48} 
-              height={48} 
-              className="rounded-xl shadow-lg"
-            />
-            <div>
-              <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                Room {room.id}
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Expires at {new Date(room.expiresAt).toLocaleTimeString()}
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+              Room {room.id}
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Expires at {new Date(room.expiresAt).toLocaleTimeString()}
+            </p>
           </div>
         </div>
         
