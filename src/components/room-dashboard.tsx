@@ -26,7 +26,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const [selfDestruct, setSelfDestruct] = useState(false);
   const [activeTab, setActiveTab] = useState("files");
-  const [imageLoaded, setImageLoaded] = useState<{ [key: string]: boolean }>({});
+  const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setMounted(true);
@@ -51,8 +51,8 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
-      const tempId = `temp-${Date.now()}-${file.name}`;
-      setUploadProgress((prev) => ({ ...prev, [tempId]: 0 }));
+      const tempId = `upload-${Date.now()}-${file.name}`;
+      setUploadProgress((prev: Record<string, number>) => ({ ...prev, [tempId]: 0 }));
 
       const formData = new FormData();
       formData.append("file", file);
@@ -65,7 +65,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
           const percentComplete = (e.loaded / e.total) * 100;
-          setUploadProgress((prev) => ({ ...prev, [tempId]: percentComplete }));
+          setUploadProgress((prev: Record<string, number>) => ({ ...prev, [tempId]: percentComplete }));
         }
       };
 
@@ -76,7 +76,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
         } else {
           toast.error(`Failed to upload ${file.name}`);
         }
-        setUploadProgress((prev) => {
+        setUploadProgress((prev: Record<string, number>) => {
           const newProgress = { ...prev };
           delete newProgress[tempId];
           return newProgress;
@@ -85,7 +85,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
 
       xhr.onerror = () => {
         toast.error(`Failed to upload ${file.name}`);
-        setUploadProgress((prev) => {
+        setUploadProgress((prev: Record<string, number>) => {
           const newProgress = { ...prev };
           delete newProgress[tempId];
           return newProgress;
@@ -94,7 +94,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
 
       xhr.send(formData);
     });
-  }, [roomId]);
+  }, [roomId, selfDestruct]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -201,7 +201,25 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             <div className="mt-8 flex-1">
               <h3 className="text-xl font-heading font-semibold mb-4">Room Files ({liveFiles.length})</h3>
               
-              {liveFiles.length === 0 ? (
+              {/* Active Uploads */}
+              {Object.keys(uploadProgress).length > 0 && (
+                <div className="mb-6 space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Uploading...</p>
+                  {Object.entries(uploadProgress).map(([tempId, progress]) => (
+                    <Card key={tempId} className="bg-primary/5 border-primary/20 backdrop-blur-sm">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium truncate max-w-[200px]">{tempId.split('-').slice(2).join('-')}</span>
+                          <span className="text-[10px] font-mono">{Math.round(progress)}%</span>
+                        </div>
+                        <Progress value={progress} className="h-1" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {liveFiles.length === 0 && Object.keys(uploadProgress).length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
                   <SearchIcon className="w-8 h-8 mb-2 opacity-50" />
                   <p>No files uploaded yet.</p>
@@ -225,7 +243,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
                               fill 
                               className={`object-cover transition-all duration-500 ${imageLoaded[f.id] ? 'scale-100 blur-0' : 'scale-110 blur-xl'}`}
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              onLoad={() => setImageLoaded(prev => ({ ...prev, [f.id]: true }))}
+                              onLoad={() => setImageLoaded((prev: Record<string, boolean>) => ({ ...prev, [f.id]: true }))}
                             />
                           </div>
                         )}
