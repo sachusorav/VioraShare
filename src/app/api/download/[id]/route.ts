@@ -24,18 +24,26 @@ export async function GET(
     });
 
     // Handle self-destruct logic
-    if (updatedFile.selfDestruct && updatedFile.downloadCount >= 1) {
-      // Delete from Vercel Blob
-      await del(file.path);
-      // Delete from Database
-      await prisma.file.delete({
-        where: { id },
-      });
+    if (updatedFile.selfDestruct && updatedFile.downloadCount === 1) {
+      try {
+        // Delete from Vercel Blob
+        await del(file.path);
+        // Delete from Database
+        await prisma.file.delete({
+          where: { id },
+        });
+      } catch (delError) {
+        console.warn("Deleletion failed (likely already deleted):", delError);
+        // We don't throw here, just proceed with the redirect
+      }
     }
 
     // Redirect to the actual file URL
     return NextResponse.redirect(file.path);
   } catch (error) {
+    if ((error as any).code === 'P2025') {
+      return NextResponse.json({ error: "File already deleted or not found" }, { status: 404 });
+    }
     console.error("Download error:", error);
     return NextResponse.json({ error: "Failed to process download" }, { status: 500 });
   }

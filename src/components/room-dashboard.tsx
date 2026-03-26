@@ -43,7 +43,8 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   };
   
   const { data } = useSWR(`/api/rooms/${roomId}`, fetcher, { 
-    refreshInterval: 3000, 
+    refreshInterval: 5000,
+    revalidateOnFocus: false,
     fallbackData: { room: { files: initialFiles } } 
   });
   
