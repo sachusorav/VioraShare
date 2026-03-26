@@ -161,7 +161,7 @@ export function HomeForms() {
                 </Select>
               </div>
             </CardContent>
-            <CardFooter className="pt-6">
+            <CardFooter className="pt-10 pb-6">
               <Button type="submit" className="w-full font-semibold" disabled={isCreating}>
                 {isCreating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 {isCreating ? "Creating..." : "Create Room"}
@@ -205,7 +205,7 @@ export function HomeForms() {
                 />
               </div>
             </CardContent>
-            <CardFooter className="pt-6">
+            <CardFooter className="pt-10 pb-6">
               <Button type="submit" className="w-full font-semibold" disabled={isJoining} variant="secondary">
                 {isJoining ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 {isJoining ? "Joining..." : "Access Files"}
