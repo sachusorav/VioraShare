@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, User } from "lucide-react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -31,24 +32,33 @@ export function RoomChat({ roomId }: { roomId: string }) {
     e.preventDefault();
     if (!message.trim()) return;
 
-    setIsSending(true);
+    const optimisticMessage = {
+      id: `opt-${Date.now()}`,
+      content: message.trim(),
+      author: "Thinking...",
+      createdAt: new Date().toISOString(),
+      roomId,
+    };
+
+    setMessage("");
+    // Optimistically update the cache
+    mutate(`/api/rooms/${roomId}/messages`, { messages: [...messages, optimisticMessage] }, false);
+
     try {
       const res = await fetch(`/api/rooms/${roomId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: message.trim() }),
+        body: JSON.stringify({ content: optimisticMessage.content }),
       });
 
-      if (res.ok) {
-        setMessage("");
-        mutate(`/api/rooms/${roomId}/messages`);
-      } else {
+      if (!res.ok) {
         toast.error("Failed to send message");
       }
+      // Revalidate to get the real message from server
+      mutate(`/api/rooms/${roomId}/messages`);
     } catch (error) {
       toast.error("Something went wrong");
-    } finally {
-      setIsSending(false);
+      mutate(`/api/rooms/${roomId}/messages`);
     }
   };
 
@@ -58,28 +68,40 @@ export function RoomChat({ roomId }: { roomId: string }) {
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       >
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50">
-            <User className="w-8 h-8 mb-2" />
-            <p className="text-sm">Start a conversation...</p>
-          </div>
-        ) : (
-          messages.map((m: any) => (
-            <div key={m.id} className="flex flex-col">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  {m.author}
-                </span>
-                <span className="text-[10px] text-muted-foreground/50">
-                  {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-              <div className="bg-muted/30 backdrop-blur rounded-2xl rounded-tl-none p-3 text-sm max-w-[85%] border border-border/50">
-                {m.content}
-              </div>
-            </div>
-          ))
-        )}
+        <AnimatePresence initial={false}>
+          {messages.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50"
+            >
+              <User className="w-8 h-8 mb-2" />
+              <p className="text-sm">Start a conversation...</p>
+            </motion.div>
+          ) : (
+            messages.map((m: any) => (
+              <motion.div 
+                key={m.id} 
+                initial={{ opacity: 0, x: -10, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                layout
+                className="flex flex-col"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${m.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-muted-foreground'}`}>
+                    {m.id.startsWith('opt-') ? "Sending..." : m.author}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/50">
+                    {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <div className={`bg-muted/30 backdrop-blur rounded-2xl rounded-tl-none p-3 text-sm max-w-[85%] border border-border/50 ${m.id.startsWith('opt-') ? 'border-primary/50' : ''}`}>
+                  {m.content}
+                </div>
+              </motion.div>
+            ))
+          )}
+        </AnimatePresence>
       </div>
 
       <form onSubmit={sendMessage} className="p-4 border-t border-border/50 bg-background/30 backdrop-blur">

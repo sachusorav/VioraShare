@@ -24,25 +24,32 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
     e.preventDefault();
     if (!content.trim()) return;
 
-    setIsSubmitting(true);
+    const optimisticNote = {
+      id: `opt-${Date.now()}`,
+      content: content.trim(),
+      createdAt: new Date().toISOString(),
+      roomId,
+    };
+
+    setContent("");
+    // Optimistically update the cache
+    mutate(`/api/rooms/${roomId}/notes`, { notes: [optimisticNote, ...notes] }, false);
+
     try {
       const res = await fetch(`/api/rooms/${roomId}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: content.trim() }),
+        body: JSON.stringify({ content: optimisticNote.content }),
       });
 
-      if (res.ok) {
-        setContent("");
-        mutate(`/api/rooms/${roomId}/notes`);
-        toast.success("Note added to clipboard");
-      } else {
+      if (!res.ok) {
         toast.error("Failed to add note");
       }
+      // Revalidate to get the real note from server
+      mutate(`/api/rooms/${roomId}/notes`);
     } catch (error) {
       toast.error("Something went wrong");
-    } finally {
-      setIsSubmitting(false);
+      mutate(`/api/rooms/${roomId}/notes`);
     }
   };
 
