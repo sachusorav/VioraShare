@@ -242,6 +242,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
                               src={f.path} 
                               alt={f.name} 
                               fill 
+                              unoptimized={true}
                               className={`object-cover transition-all duration-500 ${imageLoaded[f.id] ? 'scale-100 blur-0' : 'scale-110 blur-xl'}`}
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               onLoad={() => setImageLoaded((prev: Record<string, boolean>) => ({ ...prev, [f.id]: true }))}
