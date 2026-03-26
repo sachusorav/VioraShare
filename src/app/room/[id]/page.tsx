@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { RoomDashboard } from "@/components/room-dashboard";
+import { SocialLinks } from "@/components/social-links";
 
 export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -50,6 +51,10 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
         </div>
         
         <RoomDashboard initialFiles={room.files} roomId={room.id} />
+        
+        <div className="mt-auto pt-12 flex justify-center pb-8">
+          <SocialLinks />
+        </div>
       </main>
     </div>
   );

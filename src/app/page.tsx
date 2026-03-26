@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { HomeForms } from "@/components/home-forms";
+import { SocialLinks } from "@/components/social-links";
 
 export default function Home() {
   return (
@@ -17,10 +18,12 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="w-full animate-in fade-in zoom-in-95 duration-1000 delay-150 relative z-10 p-2 md:p-6 pb-24">
+      <div className="w-full animate-in fade-in zoom-in-95 duration-1000 delay-150 relative z-10 p-2 md:p-6 pb-24 flex flex-col items-center">
         <Suspense fallback={<div className="w-full max-w-md mx-auto h-96 bg-card/60 animate-pulse rounded-xl" />}>
           <HomeForms />
         </Suspense>
+        
+        <SocialLinks />
       </div>
     </main>
   );
