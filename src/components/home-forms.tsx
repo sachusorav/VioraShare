@@ -134,7 +134,7 @@ export function HomeForms() {
                 Create a secure, temporary space to share your files.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pb-6">
               <div className="space-y-2">
                 <Label htmlFor="passcode" className="flex items-center"><Lock className="w-3 h-3 mr-2"/> Passcode</Label>
                 <Input 
@@ -161,7 +161,7 @@ export function HomeForms() {
                 </Select>
               </div>
             </CardContent>
-            <CardFooter className="pt-10 pb-6">
+            <CardFooter className="pt-4 pb-4">
               <Button type="submit" className="w-full font-semibold" disabled={isCreating}>
                 {isCreating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 {isCreating ? "Creating..." : "Create Room"}
@@ -180,7 +180,7 @@ export function HomeForms() {
                 Enter the Room ID and passcode to access files.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pb-6">
               <div className="space-y-2">
                 <Label htmlFor="roomId" className="flex items-center"><KeyRound className="w-3 h-3 mr-2"/> Room ID</Label>
                 <Input 
@@ -205,7 +205,7 @@ export function HomeForms() {
                 />
               </div>
             </CardContent>
-            <CardFooter className="pt-10 pb-6">
+            <CardFooter className="pt-4 pb-4">
               <Button type="submit" className="w-full font-semibold" disabled={isJoining} variant="secondary">
                 {isJoining ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 {isJoining ? "Joining..." : "Access Files"}
