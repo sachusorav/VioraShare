@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,11 @@ import { toast } from "sonner";
 
 export function HomeForms() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const joinParam = searchParams.get("join");
   
+  const [activeTab, setActiveTab] = useState("create");
+
   // Create Room State
   const [createPasscode, setCreatePasscode] = useState("");
   const [expiresIn, setExpiresIn] = useState("60"); // default 1 hour
@@ -23,6 +27,13 @@ export function HomeForms() {
   const [joinRoomId, setJoinRoomId] = useState("");
   const [joinPasscode, setJoinPasscode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+
+  useEffect(() => {
+    if (joinParam) {
+      setJoinRoomId(joinParam.toUpperCase());
+      setActiveTab("join");
+    }
+  }, [joinParam]);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +92,7 @@ export function HomeForms() {
   };
 
   return (
-    <Tabs defaultValue="create" className="w-full max-w-md mx-auto">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-8">
         <TabsTrigger value="create" className="text-md py-3"><UploadCloud className="w-4 h-4 mr-2"/> Create Room</TabsTrigger>
         <TabsTrigger value="join" className="text-md py-3"><DownloadCloud className="w-4 h-4 mr-2"/> Join Room</TabsTrigger>

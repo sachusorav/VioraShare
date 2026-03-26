@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HomeForms } from "@/components/home-forms";
 
 export default function Home() {
@@ -17,7 +18,9 @@ export default function Home() {
       </div>
 
       <div className="w-full animate-in fade-in zoom-in-95 duration-1000 delay-150 relative z-10 p-2 md:p-6 pb-24">
-        <HomeForms />
+        <Suspense fallback={<div className="w-full max-w-md mx-auto h-96 bg-card/60 animate-pulse rounded-xl" />}>
+          <HomeForms />
+        </Suspense>
       </div>
     </main>
   );

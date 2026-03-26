@@ -11,7 +11,7 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
   const hasAccess = cookieStore.get(`viora_room_${roomId}`);
 
   if (!hasAccess) {
-    redirect("/"); 
+    redirect(`/?join=${roomId}`); 
   }
 
   const room = await prisma.room.findUnique({
