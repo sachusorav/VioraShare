@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import useSWR, { mutate } from "swr";
 import { Card, CardContent } from "@/components/ui/card";
