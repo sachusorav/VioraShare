@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { HomeForms } from "@/components/home-forms";
 import { SocialLinks } from "@/components/social-links";
 
@@ -24,6 +25,14 @@ export default function Home() {
         </Suspense>
         
         <SocialLinks />
+
+        <footer className="mt-12 text-center text-[10px] text-muted-foreground/40 space-y-2">
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+          </div>
+          <p>© 2026 VioraShare by Sachin Kumar. All rights reserved.</p>
+        </footer>
       </div>
     </main>
   );
