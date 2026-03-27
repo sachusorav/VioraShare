@@ -29,6 +29,7 @@ export default function Home() {
 
         <footer className="mt-12 text-center text-[10px] text-muted-foreground/40 space-y-3">
           <div className="flex items-center justify-center gap-4">
+            <Link href="/help" className="hover:text-primary transition-colors">Help & FAQ</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
           </div>

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { RoomDashboard } from "@/components/room-dashboard";
 
 export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
@@ -40,8 +41,15 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 pt-8 md:pt-12 relative z-10 flex flex-col h-full">
         <RoomDashboard initialFiles={room.files} roomId={room.id} expiresAt={room.expiresAt.toISOString()} />
         
-        <footer className="mt-auto py-12 text-center text-[10px] text-muted-foreground/30 uppercase tracking-[0.2em]">
-          VioraShield Protected Environment
+        <footer className="mt-auto py-12 flex flex-col items-center gap-4">
+          <div className="flex items-center justify-center gap-6 text-[10px] text-muted-foreground/30 uppercase tracking-[0.2em] font-medium">
+            <Link href="/help" className="hover:text-primary transition-colors">Help</Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
+          </div>
+          <p className="text-[10px] text-muted-foreground/20 uppercase tracking-[0.3em]">
+            VioraShield™ Protected Environment
+          </p>
         </footer>
       </main>
     </div>
