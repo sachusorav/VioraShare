@@ -49,7 +49,7 @@ export default function TermsOfService() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-24 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
+    <main className="min-h-screen bg-black text-white p-6 md:p-20 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
       {/* Background blurs */}
       <div className="absolute top-[-5%] right-[-5%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none" />
@@ -62,23 +62,23 @@ export default function TermsOfService() {
       <div className="max-w-3xl mx-auto space-y-12 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <div className="space-y-6">
           <Link href="/">
-            <Button variant="ghost" className="mb-4 -ml-4 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group">
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <Button variant="ghost" className="mb-4 -ml-4 h-9 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group text-xs uppercase tracking-widest font-bold">
+              <ArrowLeft className="w-3.5 h-3.5 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to VioraShare
             </Button>
           </Link>
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-3xl relative">
-              <Scale className="w-10 h-10 text-primary" />
+            <div className="p-3.5 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-2xl relative">
+              <Scale className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold tracking-tighter leading-none mb-2">Legal Terms</h1>
-              <p className="text-muted-foreground/80 font-medium text-lg">Effective Date: March 27, 2026</p>
+              <h1 className="text-4xl font-bold tracking-tighter leading-none mb-1.5">Legal Terms</h1>
+              <p className="text-muted-foreground/60 font-medium text-sm">Effective Date: March 27, 2026</p>
             </div>
           </div>
         </div>
 
-        <div className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-16 shadow-3xl shadow-black/50 overflow-hidden relative">
+        <div className="p-8 md:p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-12 shadow-3xl shadow-black/50 overflow-hidden relative">
           {terms.map((term, index) => (
             <motion.div 
               key={index} 
@@ -86,23 +86,23 @@ export default function TermsOfService() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="space-y-4 group"
+              className="space-y-3.5 group"
             >
-              <div className="flex items-center gap-5">
-                <div className="p-3 bg-zinc-900 border border-white/10 rounded-2xl shadow-xl transition-transform group-hover:scale-110 duration-500">
+              <div className="flex items-center gap-4">
+                <div className="p-2.5 bg-zinc-900 border border-white/10 rounded-xl shadow-xl transition-transform group-hover:scale-110 duration-500">
                   {term.icon}
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-500">{term.title}</h2>
+                <h2 className="text-xl font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-500">{term.title}</h2>
               </div>
-              <p className="text-zinc-400 leading-relaxed text-lg font-medium pl-0 md:pl-[4.5rem] max-w-2xl">
+              <p className="text-zinc-400 leading-relaxed text-base font-medium pl-0 md:pl-16 max-w-2xl">
                 {term.content}
               </p>
             </motion.div>
           ))}
         </div>
 
-        <footer className="pt-12 border-t border-white/10 text-center text-muted-foreground/40 text-sm font-medium">
-          Legal inquiries: <span className="text-white/60 no-underline font-bold tracking-tight">heyimsachin009@gmail.com</span>
+        <footer className="pt-12 border-t border-white/10 text-center text-muted-foreground/40 text-[10px] uppercase tracking-[0.2em] font-medium">
+          Legal inquiries: <span className="text-white/60 no-underline font-bold">heyimsachin009@gmail.com</span>
         </footer>
       </div>
     </main>

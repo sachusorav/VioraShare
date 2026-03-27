@@ -80,10 +80,10 @@ export default function HelpPage() {
               <HelpCircle className="w-10 h-10 text-primary animate-in zoom-in duration-700" />
             </div>
             <div>
-              <h1 className="text-5xl md:text-6xl font-bold font-heading tracking-tighter leading-none mb-2 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40">
+              <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tighter leading-none mb-2 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40">
                 Support Hub
               </h1>
-              <p className="text-muted-foreground/80 text-lg md:text-xl font-medium max-w-xl">
+              <p className="text-muted-foreground/80 text-base md:text-lg font-medium max-w-xl">
                 Master the art of frictionless, private file sharing.
               </p>
             </div>
@@ -94,7 +94,7 @@ export default function HelpPage() {
         <div className="space-y-6">
           <div className="flex items-center gap-3 px-2">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <h2 className="text-xs uppercase tracking-[0.3em] font-bold text-muted-foreground/60 flex items-center gap-2">
+            <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60 flex items-center gap-2">
               <MessageSquare className="w-3 h-3" />
               Intelligence Briefing
             </h2>
@@ -117,15 +117,15 @@ export default function HelpPage() {
               >
                 <button 
                   onClick={() => toggle(index)}
-                  className="w-full flex items-center justify-between p-7 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
                 >
-                  <div className="flex items-center gap-5">
-                    <div className={`p-3 rounded-2xl transition-all duration-500 ${
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2.5 rounded-xl transition-all duration-500 ${
                       openIndex === index ? 'bg-primary/20 scale-110' : 'bg-black/40 group-hover:scale-105'
                     }`}>
                       {faq.icon}
                     </div>
-                    <span className={`font-semibold text-xl tracking-tight transition-colors duration-300 ${
+                    <span className={`font-semibold text-lg tracking-tight transition-colors duration-300 ${
                       openIndex === index ? 'text-white' : 'text-white/80'
                     }`}>
                       {faq.question}
@@ -134,7 +134,7 @@ export default function HelpPage() {
                   <div className={`p-2 rounded-full transition-all duration-500 ${
                     openIndex === index ? 'bg-primary/10 rotate-180' : 'bg-white/5'
                   }`}>
-                    <ChevronDown className={`w-5 h-5 transition-colors ${
+                    <ChevronDown className={`w-4 h-4 transition-colors ${
                       openIndex === index ? 'text-primary' : 'text-muted-foreground/40'
                     }`} />
                   </div>
@@ -147,10 +147,10 @@ export default function HelpPage() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                      className="px-7 pb-8 ml-[4.5rem]"
+                      className="px-6 pb-7 ml-14"
                     >
-                      <div className="h-px w-12 bg-primary/20 mb-6" />
-                      <p className="text-zinc-400 leading-relaxed max-w-xl text-lg font-medium selection:bg-primary/40 selection:text-white">
+                      <div className="h-px w-8 bg-primary/20 mb-4" />
+                      <p className="text-zinc-400 leading-relaxed max-w-xl text-base font-medium selection:bg-primary/40 selection:text-white">
                         {faq.answer}
                       </p>
                     </motion.div>
@@ -162,12 +162,12 @@ export default function HelpPage() {
         </div>
 
         {/* Contact Support Card */}
-        <div className="mt-20 p-10 md:p-14 rounded-[3rem] bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl shadow-black">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/20 transition-all duration-1000" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="space-y-4 text-center md:text-left">
-              <h3 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none">Still curious?</h3>
-              <p className="text-muted-foreground/80 text-lg md:text-xl font-medium max-w-sm">
+        <div className="mt-16 p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl shadow-black">
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/20 transition-all duration-1000" />
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="space-y-3 text-center md:text-left">
+              <h3 className="text-2xl md:text-3xl font-bold tracking-tighter leading-none">Still curious?</h3>
+              <p className="text-muted-foreground/80 text-base md:text-lg font-medium max-w-sm">
                 If the intelligence briefing above wasn't enough, our team is standing by.
               </p>
             </div>
@@ -179,9 +179,9 @@ export default function HelpPage() {
                 toast.success('Frequency secured: Email copied to clipboard!');
                 window.location.href = `mailto:${email}`;
               }}
-              className="rounded-2xl gap-3 h-16 px-10 text-xl font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all bg-primary hover:bg-blue-600 text-white border-b-4 border-blue-800"
+              className="rounded-xl gap-2.5 h-14 px-8 text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all bg-primary hover:bg-blue-600 text-white border-b-4 border-blue-800"
             >
-              <Mail className="w-6 h-6 transition-transform group-hover:rotate-12" />
+              <Mail className="w-5 h-5 transition-transform group-hover:rotate-12" />
               Contact Support
             </Button>
           </div>
