@@ -15,6 +15,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 const faqs = [
   {
@@ -132,12 +133,19 @@ export default function HelpPage() {
                 If your question isn't answered here, feel free to reach out to our team directly.
               </p>
             </div>
-            <Link href="mailto:heyimsachin009@gmail.com">
-              <Button size="lg" className="rounded-2xl gap-2 h-14 px-8 text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
-                <Mail className="w-5 h-5" />
-                Contact Support
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              onClick={() => {
+                const email = 'heyimsachin009@gmail.com';
+                navigator.clipboard.writeText(email);
+                toast.success('Email address copied to clipboard!');
+                window.location.href = `mailto:${email}`;
+              }}
+              className="rounded-2xl gap-2 h-14 px-8 text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+            >
+              <Mail className="w-5 h-5 transition-transform group-hover:rotate-12" />
+              Contact Support
+            </Button>
           </div>
         </div>
 
