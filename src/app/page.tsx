@@ -27,10 +27,21 @@ export default function Home() {
         
         <SocialLinks />
 
-        <footer className="mt-12 text-center text-[10px] text-muted-foreground/40 space-y-2">
+        <footer className="mt-12 text-center text-[10px] text-muted-foreground/40 space-y-3">
           <div className="flex items-center justify-center gap-4">
             <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+          </div>
+          <div className="flex items-center justify-center">
+            <Link 
+              href="https://www.linkedin.com/posts/sachinkumar014_viorashare-secure-temporary-file-sharing-activity-7442886400578084864-Mbf7" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-primary transition-all duration-300 py-1 px-3 rounded-full bg-muted/20 border border-muted-foreground/10"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+              <span className="font-bold tracking-tight">Official Announcement</span>
+            </Link>
           </div>
           <p>© 2026 VioraShare by Sachin Kumar. All rights reserved.</p>
         </footer>

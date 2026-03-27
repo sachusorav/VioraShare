@@ -91,7 +91,8 @@ export default function RootLayout({
       "url": "https://www.linkedin.com/in/sachinkumar014",
       "sameAs": [
         "https://www.linkedin.com/in/sachinkumar014",
-        "https://github.com/sachusorav"
+        "https://github.com/sachusorav",
+        "https://www.linkedin.com/posts/sachinkumar014_viorashare-secure-temporary-file-sharing-activity-7442886400578084864-Mbf7"
       ]
     },
     "publisher": {
@@ -100,7 +101,10 @@ export default function RootLayout({
       "logo": {
         "@type": "ImageObject",
         "url": "https://viorashare.online/icon.png"
-      }
+      },
+      "sameAs": [
+        "https://www.linkedin.com/posts/sachinkumar014_viorashare-secure-temporary-file-sharing-activity-7442886400578084864-Mbf7"
+      ]
     }
   };
 
