@@ -16,9 +16,9 @@ import { SharedClipboard } from "./shared-clipboard";
 import { RoomChat } from "./room-chat";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { RoomCountdown } from "./room-countdown";
+import JSZip from "jszip";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -28,6 +28,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const [selfDestruct, setSelfDestruct] = useState(false);
   const [activeTab, setActiveTab] = useState("files");
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
+  const [isZipping, setIsZipping] = useState(false);
 
   useEffect(() => {
     setMounted(true);
