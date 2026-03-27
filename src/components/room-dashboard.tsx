@@ -18,6 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { RoomCountdown } from "./room-countdown";
+import JSZip from "jszip";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -27,6 +29,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const [selfDestruct, setSelfDestruct] = useState(false);
   const [activeTab, setActiveTab] = useState("files");
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
+  const [isZipping, setIsZipping] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -112,15 +115,52 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
     toast.success("Room link copied to clipboard!");
   }
 
+  const downloadAllFiles = async () => {
+    if (liveFiles.length === 0) return;
+    setIsZipping(true);
+    const zip = new JSZip();
+    
+    try {
+      toast.info("Preparing your ZIP archive...");
+      
+      const downloadPromises = liveFiles.map(async (file) => {
+        const response = await fetch(file.path);
+        const blob = await response.blob();
+        zip.file(file.name, blob);
+      });
+
+      await Promise.all(downloadPromises);
+      
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = window.URL.createObjectURL(content);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `VioraShare_${roomId}.zip`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Download started!");
+    } catch (error) {
+      console.error("Zipping error:", error);
+      toast.error("Failed to create ZIP archive.");
+    } finally {
+      setIsZipping(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 flex-1">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-          Room {roomId}
-        </h1>
-        <p className="text-muted-foreground">
-          Expires at {mounted ? new Date(expiresAt).toLocaleTimeString() : "..."}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            Room {roomId}
+          </h1>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Room Active" />
+            <span className="text-xs text-muted-foreground font-medium tracking-wide">Live Session</span>
+          </div>
+        </div>
+        <RoomCountdown expiresAt={expiresAt} />
       </div>
 
       <div className="flex items-center gap-4">
@@ -200,7 +240,21 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             </div>
 
             <div className="mt-8 flex-1">
-              <h3 className="text-xl font-heading font-semibold mb-4">Room Files ({liveFiles.length})</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-heading font-semibold">Room Files ({liveFiles.length})</h3>
+                {liveFiles.length > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={downloadAllFiles} 
+                    disabled={isZipping}
+                    className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Download className={`w-3.5 h-3.5 mr-2 ${isZipping ? 'animate-bounce' : ''}`} />
+                    {isZipping ? "Bundling..." : "Download All (ZIP)"}
+                  </Button>
+                )}
+              </div>
               
               {/* Active Uploads */}
               {Object.keys(uploadProgress).length > 0 && (
