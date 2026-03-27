@@ -71,8 +71,47 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VioraShare",
+    "operatingSystem": "Web",
+    "applicationCategory": "ProductivityApplication",
+    "description": "Send files securely with no login and no trace. Disposable rooms for frictionless temporary sharing.",
+    "url": "https://viorashare.online",
+    "applicationSubCategory": "File Sharing",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Sachin Kumar",
+      "url": "https://www.linkedin.com/in/sachinkumar014",
+      "sameAs": [
+        "https://www.linkedin.com/in/sachinkumar014",
+        "https://github.com/sachusorav"
+      ]
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "VioraShare",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://viorashare.online/icon.png"
+      }
+    }
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased min-h-screen bg-background flex flex-col`}
       >
