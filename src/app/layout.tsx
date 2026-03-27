@@ -14,6 +14,7 @@ const outfit = Outfit({
 });
 
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "VioraShare - Secure Temporary File Sharing",
@@ -126,6 +127,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Analytics />
           <Toaster position="top-center" theme="system" />
         </ThemeProvider>
       </body>
