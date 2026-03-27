@@ -30,7 +30,6 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const [activeTab, setActiveTab] = useState("files");
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
   const [isZipping, setIsZipping] = useState(false);
-  const [isZipping, setIsZipping] = useState(false);
 
   useEffect(() => {
     setMounted(true);
