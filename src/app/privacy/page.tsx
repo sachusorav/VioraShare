@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -81,17 +83,24 @@ export default function PrivacyPolicy() {
           <div className="absolute left-16 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden md:block" />
 
           {sections.map((section, index) => (
-            <div key={index} className="space-y-4 relative z-10">
+            <motion.div 
+              key={index} 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              className="space-y-4 relative z-10 group"
+            >
               <div className="flex items-center gap-5">
-                <div className="p-3 bg-zinc-900 border border-white/10 rounded-2xl shadow-xl z-20">
+                <div className="p-3 bg-zinc-900 border border-white/10 rounded-2xl shadow-xl z-20 transition-transform group-hover:scale-110 duration-500">
                   {section.icon}
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">{section.title}</h2>
+                <h2 className="text-2xl font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-500">{section.title}</h2>
               </div>
               <p className="text-zinc-400 leading-relaxed text-lg font-medium pl-0 md:pl-[4.5rem] max-w-2xl">
                 {section.content}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 

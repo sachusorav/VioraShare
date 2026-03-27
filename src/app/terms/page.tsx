@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import {
   Lock, 
   Ban 
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function TermsOfService() {
   const terms = [
@@ -70,14 +73,21 @@ export default function TermsOfService() {
             </div>
             <div>
               <h1 className="text-5xl font-bold tracking-tighter leading-none mb-2">Legal Terms</h1>
-              <p className="text-muted-foreground/80 font-medium">Effective Date: March 27, 2026</p>
+              <p className="text-muted-foreground/80 font-medium text-lg">Effective Date: March 27, 2026</p>
             </div>
           </div>
         </div>
 
-        <div className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-16 shadow-3xl shadow-black/50 overflow-hidden">
+        <div className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-16 shadow-3xl shadow-black/50 overflow-hidden relative">
           {terms.map((term, index) => (
-            <div key={index} className="space-y-4 group">
+            <motion.div 
+              key={index} 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="space-y-4 group"
+            >
               <div className="flex items-center gap-5">
                 <div className="p-3 bg-zinc-900 border border-white/10 rounded-2xl shadow-xl transition-transform group-hover:scale-110 duration-500">
                   {term.icon}
@@ -87,7 +97,7 @@ export default function TermsOfService() {
               <p className="text-zinc-400 leading-relaxed text-lg font-medium pl-0 md:pl-[4.5rem] max-w-2xl">
                 {term.content}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 

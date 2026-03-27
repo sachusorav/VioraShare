@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -54,9 +55,9 @@ export default function HelpPage() {
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-24 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
-      {/* Background elements */}
+      {/* Background blurs */}
       <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[150px] -z-10 pointer-events-none animate-pulse" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none transition-all duration-1000" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none" />
       
       {/* Subtle Logo Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] -z-20 pointer-events-none scale-150 rotate-12">
@@ -105,7 +106,8 @@ export default function HelpPage() {
               <motion.div 
                 key={index} 
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={`group rounded-[2rem] transition-all duration-500 border ${
                   openIndex === index 
@@ -192,13 +194,6 @@ export default function HelpPage() {
            </div>
            <p className="font-medium">&copy; 2026 VioraShare Tech. Built by <span className="text-white/60">Sachin Kumar</span>.</p>
            <p className="text-[10px] text-muted-foreground/20 font-mono tracking-[0.5em] uppercase">Private & Frictionless</p>
-        </footer>
-      </div>
-    </main>
-  );
-}
-           <p>&copy; 2026 VioraShare Tech. Built by Sachin Kumar.</p>
-           <p className="text-[10px] text-muted-foreground/40 font-mono tracking-widest uppercase">Privacy-First Communication</p>
         </footer>
       </div>
     </main>
