@@ -151,13 +151,26 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   return (
     <div className="flex flex-col gap-6 flex-1">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-            Room {roomId}
-          </h1>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Room Active" />
-            <span className="text-xs text-muted-foreground font-medium tracking-wide">Live Session</span>
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 p-0.5 rounded-full bg-gradient-to-tr from-primary to-blue-600 shadow-xl flex-shrink-0 ring-2 ring-background">
+            <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
+              <Image 
+                src="/icon.png" 
+                alt="Viora" 
+                width={32} 
+                height={32} 
+                className="scale-90"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+              Room {roomId}
+            </h1>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Room Active" />
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Live Session</span>
+            </div>
           </div>
         </div>
         <RoomCountdown expiresAt={expiresAt} />
