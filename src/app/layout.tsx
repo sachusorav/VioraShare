@@ -15,7 +15,6 @@ const outfit = Outfit({
 
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "VioraShare - Secure Temporary File Sharing",
@@ -40,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "VioraShare",
     images: [
       {
-        url: "/api/og",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "VioraShare Preview",
@@ -53,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VioraShare - Secure Temporary File Sharing",
     description: "Send files securely with no login and no trace.",
-    images: ["/api/og"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -129,7 +128,6 @@ export default function RootLayout({
         >
           {children}
           <Analytics />
-          <SpeedInsights />
           <Toaster position="top-center" theme="system" />
         </ThemeProvider>
       </body>
