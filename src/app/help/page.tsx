@@ -64,26 +64,25 @@ export default function HelpPage() {
         <Image src="/icon.png" alt="" width={600} height={600} priority />
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out relative z-10">
+      <div className="max-w-2xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out relative z-10">
         
         {/* Header Section */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Link href="/">
-            <Button variant="ghost" className="mb-4 -ml-4 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group">
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <Button variant="ghost" className="mb-2 -ml-3 h-8 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group text-[10px] uppercase tracking-[0.2em] font-bold">
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to VioraShare
             </Button>
           </Link>
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-[2rem] relative group shadow-2xl shadow-primary/10">
-              <div className="absolute inset-0 bg-primary/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
-              <HelpCircle className="w-10 h-10 text-primary animate-in zoom-in duration-700" />
+            <div className="p-3 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-2xl relative group">
+              <HelpCircle className="w-8 h-8 text-primary animate-in zoom-in duration-700" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tighter leading-none mb-2 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40">
+              <h1 className="text-3xl md:text-4xl font-bold font-heading tracking-tighter leading-none mb-1 bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40">
                 Support Hub
               </h1>
-              <p className="text-muted-foreground/80 text-base md:text-lg font-medium max-w-xl">
+              <p className="text-muted-foreground/60 text-sm md:text-base font-medium max-w-sm">
                 Master the art of frictionless, private file sharing.
               </p>
             </div>
@@ -91,51 +90,50 @@ export default function HelpPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center gap-3 px-2">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60 flex items-center gap-2">
-              <MessageSquare className="w-3 h-3" />
+            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-muted-foreground/40 flex items-center gap-2">
+              <MessageSquare className="w-3 h-3 grayscale opacity-50" />
               Intelligence Briefing
             </h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
           </div>
           
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {faqs.map((faq, index) => (
               <motion.div 
                 key={index} 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`group rounded-[2rem] transition-all duration-500 border ${
+                transition={{ delay: index * 0.05 }}
+                className={`group rounded-2xl transition-all duration-500 border ${
                   openIndex === index 
                   ? 'bg-white/[0.06] border-primary/30 shadow-2xl shadow-primary/5' 
                   : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
-                } backdrop-blur-3xl`}
+                } backdrop-blur-2xl`}
               >
                 <button 
                   onClick={() => toggle(index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-5 text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`p-2.5 rounded-xl transition-all duration-500 ${
-                      openIndex === index ? 'bg-primary/20 scale-110' : 'bg-black/40 group-hover:scale-105'
+                    <div className={`p-2 rounded-lg transition-all duration-500 ${
+                      openIndex === index ? 'bg-primary/20' : 'bg-black/40'
                     }`}>
                       {faq.icon}
                     </div>
-                    <span className={`font-semibold text-lg tracking-tight transition-colors duration-300 ${
-                      openIndex === index ? 'text-white' : 'text-white/80'
+                    <span className={`font-semibold text-base tracking-tight transition-colors duration-300 ${
+                      openIndex === index ? 'text-white' : 'text-white/70'
                     }`}>
                       {faq.question}
                     </span>
                   </div>
-                  <div className={`p-2 rounded-full transition-all duration-500 ${
+                  <div className={`p-1.5 rounded-full transition-all duration-300 ${
                     openIndex === index ? 'bg-primary/10 rotate-180' : 'bg-white/5'
                   }`}>
-                    <ChevronDown className={`w-4 h-4 transition-colors ${
-                      openIndex === index ? 'text-primary' : 'text-muted-foreground/40'
+                    <ChevronDown className={`w-3.5 h-3.5 transition-colors ${
+                      openIndex === index ? 'text-primary' : 'text-muted-foreground/20'
                     }`} />
                   </div>
                 </button>
@@ -146,11 +144,10 @@ export default function HelpPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                      className="px-6 pb-7 ml-14"
+                      transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                      className="px-5 pb-6 ml-14"
                     >
-                      <div className="h-px w-8 bg-primary/20 mb-4" />
-                      <p className="text-zinc-400 leading-relaxed max-w-xl text-base font-medium selection:bg-primary/40 selection:text-white">
+                      <p className="text-zinc-400 leading-relaxed max-w-lg text-sm font-medium selection:bg-primary/40 selection:text-white">
                         {faq.answer}
                       </p>
                     </motion.div>

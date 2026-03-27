@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-20 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
+    <main className="min-h-screen bg-black text-white p-6 md:p-16 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
       {/* Background blurs */}
       <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute bottom-[-5%] right-[-5%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none" />
@@ -59,45 +59,45 @@ export default function PrivacyPolicy() {
         <Image src="/icon.png" alt="" width={600} height={600} priority />
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-12 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <div className="space-y-6">
+      <div className="max-w-2xl mx-auto space-y-12 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="space-y-4">
           <Link href="/">
-            <Button variant="ghost" className="mb-4 -ml-4 h-9 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group text-xs uppercase tracking-widest font-bold">
-              <ArrowLeft className="w-3.5 h-3.5 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <Button variant="ghost" className="mb-2 -ml-3 h-8 hover:bg-white/5 transition-all text-muted-foreground hover:text-primary group text-[10px] uppercase tracking-[0.2em] font-bold">
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to VioraShare
             </Button>
           </Link>
           <div className="flex items-center gap-4">
-            <div className="p-3.5 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-2xl relative">
+            <div className="p-3 bg-primary/10 border border-primary/20 backdrop-blur-2xl rounded-2xl relative">
               <ShieldCheck className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold tracking-tighter leading-none mb-1.5">Privacy Protocol</h1>
-              <p className="text-muted-foreground/60 font-medium text-sm">Last Updated: March 27, 2026</p>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-1.5">Privacy Protocol</h1>
+              <p className="text-muted-foreground/60 font-medium text-xs md:text-sm">Last Updated: March 27, 2026</p>
             </div>
           </div>
         </div>
 
-        <div className="p-8 md:p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-12 shadow-3xl shadow-black/50 overflow-hidden relative">
+        <div className="p-6 md:p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl space-y-10 shadow-3xl shadow-black/50 overflow-hidden relative">
           {/* Subtle line decoration */}
-          <div className="absolute left-14 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden md:block" />
+          <div className="absolute left-12 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden md:block" />
 
           {sections.map((section, index) => (
             <motion.div 
               key={index} 
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -15 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.6 }}
-              className="space-y-3.5 relative z-10 group"
+              transition={{ delay: index * 0.05, duration: 0.6 }}
+              className="space-y-3 relative z-10 group"
             >
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-zinc-900 border border-white/10 rounded-xl shadow-xl z-20 transition-transform group-hover:scale-110 duration-500">
+              <div className="flex items-center gap-3.5">
+                <div className="p-2 bg-zinc-900 border border-white/10 rounded-xl shadow-xl z-20 transition-transform group-hover:scale-110 duration-500">
                   {section.icon}
                 </div>
-                <h2 className="text-xl font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-500">{section.title}</h2>
+                <h2 className="text-lg font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-500">{section.title}</h2>
               </div>
-              <p className="text-zinc-400 leading-relaxed text-base font-medium pl-0 md:pl-16 max-w-2xl">
+              <p className="text-zinc-400 leading-relaxed text-sm font-medium pl-0 md:pl-[3.75rem] max-w-lg">
                 {section.content}
               </p>
             </motion.div>
