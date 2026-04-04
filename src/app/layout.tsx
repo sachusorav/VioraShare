@@ -15,6 +15,7 @@ const outfit = Outfit({
 
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "VioraShare - Free Secure File Sharing | No Login Required",
@@ -197,6 +198,7 @@ export default function RootLayout({
         >
           {children}
           <Analytics />
+          <SpeedInsights />
           <Toaster position="top-center" theme="system" />
         </ThemeProvider>
       </body>
