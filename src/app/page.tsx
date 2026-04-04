@@ -37,7 +37,15 @@ export default function Home() {
       "price": "0", 
       "priceCurrency": "USD" 
     },
-    "description": "Free secure temporary file sharing with no login required."
+    "description": "Free secure temporary file sharing with no login required.",
+    "author": {
+      "@type": "Person",
+      "name": "Sachin Kumar"
+    },
+    "screenshot": "https://www.viorashare.online/icon.png",
+    "featureList": "No login required, Self-destruct mode, Room passcodes, Shared clipboard, Auto-expiring rooms, Zero tracking",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "inLanguage": "en"
   };
 
   return (
