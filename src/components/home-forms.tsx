@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Lock, KeyRound, UploadCloud, DownloadCloud, History, Trash2, ArrowRight } from "lucide-react";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
+import AdPortal from "@/components/ads/ad-portal";
 
 export function HomeForms() {
   const router = useRouter();
@@ -47,6 +48,8 @@ export function HomeForms() {
   const [createPasscode, setCreatePasscode] = useState("");
   const [expiresIn, setExpiresIn] = useState("60"); // default 1 hour
   const [isCreating, setIsCreating] = useState(false);
+  const [showAd, setShowAd] = useState(false);
+  const [pendingCreate, setPendingCreate] = useState(false);
 
   // Join Room State
   const [joinRoomId, setJoinRoomId] = useState("");
@@ -66,7 +69,13 @@ export function HomeForms() {
       toast.error("Please enter a passcode to secure your room.");
       return;
     }
-    
+    // Show the Ad Portal first, then create the room
+    setPendingCreate(true);
+    setShowAd(true);
+  };
+
+  const doCreateRoom = async () => {
+    setShowAd(false);
     setIsCreating(true);
     try {
       const res = await fetch("/api/rooms", {
@@ -86,6 +95,7 @@ export function HomeForms() {
       toast.error(error.message);
     } finally {
       setIsCreating(false);
+      setPendingCreate(false);
     }
   };
 
@@ -119,7 +129,9 @@ export function HomeForms() {
   };
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
+    <>
+      <AdPortal isOpen={showAd} onComplete={doCreateRoom} />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-8">
         <TabsTrigger value="create" className="text-md py-3"><UploadCloud className="w-4 h-4 mr-2"/> Create Room</TabsTrigger>
         <TabsTrigger value="join" className="text-md py-3"><DownloadCloud className="w-4 h-4 mr-2"/> Join Room</TabsTrigger>
@@ -162,9 +174,9 @@ export function HomeForms() {
               </div>
             </CardContent>
             <CardFooter className="pt-4 pb-4">
-              <Button type="submit" className="w-full font-semibold" disabled={isCreating}>
+              <Button type="submit" className="w-full font-semibold" disabled={isCreating || pendingCreate}>
                 {isCreating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                {isCreating ? "Creating..." : "Create Room"}
+                {isCreating ? "Creating..." : pendingCreate ? "Securing..." : "Create Room"}
               </Button>
             </CardFooter>
           </form>
@@ -250,5 +262,6 @@ export function HomeForms() {
         </div>
       )}
     </Tabs>
+    </>
   );
 }
