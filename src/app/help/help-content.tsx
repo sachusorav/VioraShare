@@ -20,28 +20,28 @@ import { toast } from "sonner";
 
 const faqs = [
   {
-    question: "How do I share files?",
-    answer: "Simply create a 'Room' with a custom duration (15m, 1h, or 24h) and a passcode. Once the room is created, upload your files and share the magic link or the room ID and passcode with your friends. Everything syncs instantly!",
+    question: "How do I share files without an account?",
+    answer: "VioraShare is designed for frictionless sharing. Simply create a secure \"Room\" with a custom duration (15 minutes, 1 hour, or 24 hours) and set a unique passcode. Once the room is active, you can upload files instantly and share the magic link or the Room ID and passcode with your recipients.",
     icon: <FileBox className="w-5 h-5 text-blue-500" />
   },
   {
-    question: "What is the file size limit?",
-    answer: "VioraShare currently supports files up to 50MB for optimal speed and reliability. If you need larger file support, feel free to reach out to our team.",
+    question: "What is the maximum file size supported?",
+    answer: "Currently, VioraShare supports individual file uploads up to 50MB. This limit ensures optimal speed and reliability for our temporary cloud buckets. If you have requirements for larger file transfers, please contact our support team to discuss custom solutions.",
     icon: <Zap className="w-5 h-5 text-yellow-500" />
   },
   {
-    question: "How long do rooms last?",
-    answer: "You are the master! You can choose 15 minutes for a quick drop, 1 hour for a meeting, or 24 hours for long-term collaboration. Once the timer hits zero, the room and all its files are permanently deleted from our servers.",
+    question: "How long are my files stored on the server?",
+    answer: "You have full control over the lifespan of your data. You can choose for rooms to expire in 15 minutes for quick transfers, 1 hour for standard collaboration, or 24 hours for longer-term access. Once the room timer reaches zero, the room and all associated files are permanently and irreversibly purged from our encrypted storage.",
     icon: <Clock className="w-5 h-5 text-purple-500" />
   },
   {
-    question: "Is it secure?",
-    answer: "Absolutely. We don't require accounts, so your personal identity is never at risk. Files are stored in secure, encrypted buckets and protected by the room passcode you set. Plus, our 'Self-Destruct' feature ensures files expire instantly after download.",
+    question: "Is VioraShare secure and private?",
+    answer: "Security is our core foundation. We do not require any personal information or account creation, meaning your identity is never linked to your files. All data is stored in secure, encrypted buckets and gated behind bcrypt-hashed passcodes. Furthermore, our architecture ensures zero persistent tracking of your activity.",
     icon: <Shield className="w-5 h-5 text-green-500" />
   },
   {
-    question: "What is the 'Self-Destruct' mode?",
-    answer: "When enabled, 'Self-Destruct' ensures that once a file is downloaded, it is immediately deleted from our server. This is the ultimate privacy tier for highly sensitive sharing.",
+    question: "How does the \"Self-Destruct\" mode work?",
+    answer: "When you enable \"Self-Destruct\" mode for a file, it is immediately deleted from our servers the moment it is successfully downloaded by a recipient. This provides an ultimate layer of privacy for sensitive documents, ensuring they exist only as long as necessary for the transfer.",
     icon: <Shield className="w-5 h-5 text-red-500" />
   }
 ];

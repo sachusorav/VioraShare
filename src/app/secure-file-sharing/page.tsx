@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     "GDPR file sharing", "secure anonymous file transfer",
     "zero knowledge file sharing", "confidential file sharing"
   ],
-  alternates: { canonical: "/secure-file-sharing" },
+  alternates: { canonical: "https://www.viorashare.online/secure-file-sharing" },
   openGraph: {
     title: "Secure Private File Sharing — VioraShare",
     description: "Zero data stored. Passcode protected. GDPR-friendly. The most private way to share files online.",
-    url: "https://viorashare.online/secure-file-sharing",
+    url: "https://www.viorashare.online/secure-file-sharing",
   },
 };
 

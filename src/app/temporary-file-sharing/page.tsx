@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     "file sharing with expiry", "auto delete file sharing", "timed file sharing",
     "temporary file upload", "expiring file links", "files that delete themselves"
   ],
-  alternates: { canonical: "/temporary-file-sharing" },
+  alternates: { canonical: "https://www.viorashare.online/temporary-file-sharing" },
   openGraph: {
     title: "Temporary File Sharing That Auto-Deletes — VioraShare",
     description: "Create self-destructing file rooms. Files vanish automatically when time's up.",
-    url: "https://viorashare.online/temporary-file-sharing",
+    url: "https://www.viorashare.online/temporary-file-sharing",
   },
 };
 

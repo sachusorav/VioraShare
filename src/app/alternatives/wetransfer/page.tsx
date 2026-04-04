@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     "WeTransfer no login", "WeTransfer without account", "free file sharing no sign up",
     "anonymous file transfer", "WeTransfer replacement", "send files free no account"
   ],
-  alternates: { canonical: "/alternatives/wetransfer" },
+  alternates: { canonical: "https://www.viorashare.online/alternatives/wetransfer" },
   openGraph: {
     title: "Best Free WeTransfer Alternative — VioraShare",
     description: "No login. No email. Files self-destruct. The private WeTransfer alternative.",
-    url: "https://viorashare.online/alternatives/wetransfer",
+    url: "https://www.viorashare.online/alternatives/wetransfer",
   },
 };
 

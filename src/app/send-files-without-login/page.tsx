@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     "share files without sign up", "send files without email", "no registration file sharing",
     "anonymous file upload", "share files no account", "file transfer without account"
   ],
-  alternates: { canonical: "/send-files-without-login" },
+  alternates: { canonical: "https://www.viorashare.online/send-files-without-login" },
   openGraph: {
     title: "Send Files Without Login — VioraShare",
     description: "No email. No account. No trace. Share files anonymously in 10 seconds.",
-    url: "https://viorashare.online/send-files-without-login",
+    url: "https://www.viorashare.online/send-files-without-login",
   },
 };
 

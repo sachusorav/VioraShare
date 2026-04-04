@@ -48,14 +48,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://viorashare.online"),
+  metadataBase: new URL("https://www.viorashare.online"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "VioraShare - Free Secure File Sharing | No Login Required",
     description: "Send files instantly with no login, no sign-up, and no trace. Create a secure temporary room, share files across devices, and everything self-destructs when done.",
-    url: "https://viorashare.online",
+    url: "https://www.viorashare.online",
     siteName: "VioraShare",
     images: [
       {
@@ -102,7 +102,7 @@ export default function RootLayout({
       "applicationCategory": "ProductivityApplication",
       "applicationSubCategory": "File Sharing",
       "description": "Free secure temporary file sharing. No login required. Create disposable rooms, share files across devices, everything self-destructs when done.",
-      "url": "https://viorashare.online",
+      "url": "https://www.viorashare.online",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -149,47 +149,9 @@ export default function RootLayout({
         "name": "VioraShare",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://viorashare.online/icon.png"
+          "url": "https://www.viorashare.online/icon.png"
         }
       }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How do I share files without login on VioraShare?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Create a room on VioraShare with a passcode and expiry time. Share the Room ID and passcode with anyone. No login or account required for either party."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is VioraShare free to use?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, VioraShare is completely free. Create rooms, upload files, and share them with anyone at no cost."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How long do files stay on VioraShare?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Files stay for the duration you choose: 15 minutes, 1 hour, or 24 hours. After that, the room and all files are automatically deleted."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is VioraShare a WeTransfer alternative?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. VioraShare is a free WeTransfer alternative with no login required, no email needed, and self-destructing rooms for maximum privacy."
-          }
-        }
-      ]
     }
   ];
 
