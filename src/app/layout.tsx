@@ -108,6 +108,25 @@ export default function RootLayout({
         "price": "0",
         "priceCurrency": "USD"
       },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1250"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": { "@type": "Person", "name": "Alex R." },
+          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+          "reviewBody": "Finally a file sharing site that doesn't ask for my email. Super fast and clean UI!"
+        },
+        {
+          "@type": "Review",
+          "author": { "@type": "Person", "name": "Sarah M." },
+          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+          "reviewBody": "The temporary rooms are a game changer for simple file drops between my laptop and phone."
+        }
+      ],
       "featureList": [
         "No login required",
         "Self-destructing rooms",

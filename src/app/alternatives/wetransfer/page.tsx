@@ -171,9 +171,12 @@ export default function WeTransferAlternativePage() {
           </div>
         </section>
 
-        <footer className="text-center pb-12 text-zinc-700 text-xs">
-          © 2026 VioraShare · <Link href="/privacy" className="hover:text-zinc-500 transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-zinc-500 transition-colors">Terms</Link>
-        </footer>
+        <footer className="text-center pb-12 text-zinc-700 text-xs px-6">
+        <p className="max-w-2xl mx-auto mb-4 opacity-50 italic">
+          VioraShare is not affiliated with WeTransfer. All product names, logos, and brands are property of their respective owners. 
+        </p>
+        © 2026 VioraShare · <Link href="/privacy" className="hover:text-zinc-500 transition-colors">Privacy Policy</Link> · <Link href="/terms" className="hover:text-zinc-500 transition-colors">Terms of Service</Link>
+      </footer>
       </main>
     </>
   );
