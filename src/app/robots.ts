@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/'],
+        disallow: '/api/',
       },
     ],
-    sitemap: 'https://viorashare.online/sitemap.xml',
+    sitemap: 'https://www.viorashare.online/sitemap.xml',
   };
 }

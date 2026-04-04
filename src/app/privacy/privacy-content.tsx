@@ -42,7 +42,12 @@ export default function PrivacyContent() {
       content: "We use Vercel for hosting and Neon for database management. These industry leaders provide the security infrastructure that protects our data in transit."
     },
     {
-      title: "5. Your Rights",
+      title: "5. Advertising",
+      icon: <Globe className="w-6 h-6 text-blue-500" />,
+      content: "VioraShare uses Google AdSense to display advertisements. Google and its partners may use cookies to serve ads based on your prior visits to this website or other websites on the internet. You can opt out of personalized advertising by visiting Google's Ads Settings at https://adssettings.google.com. For more information on how Google uses data, visit https://policies.google.com/technologies/partner-sites."
+    },
+    {
+      title: "6. Your Rights",
       icon: <UserCheck className="w-6 h-6 text-amber-400" />,
       content: "Since we do not store personal profiles, there is no 'account' to delete. Your right to be forgotten is built directly into our expiring room architecture."
     }

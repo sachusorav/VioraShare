@@ -1,12 +1,52 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HomeForms } from "@/components/home-forms";
 import { SocialLinks } from "@/components/social-links";
 
+export const metadata: Metadata = {
+  title: "VioraShare - Free Secure File Sharing | No Login Required",
+  description: "Share files instantly with VioraShare. No login, no account, no trace. Create a private room, upload files, and share a link — files auto-delete after 15 min, 1 hour, or 24 hours.",
+  keywords: "free file sharing, no login file sharing, temporary file sharing, secure file transfer, anonymous file sharing, share files online, no account file sharing",
+  alternates: {
+    canonical: "https://www.viorashare.online",
+  },
+  openGraph: {
+    title: "VioraShare - Free Secure File Sharing | No Login Required",
+    description: "Share files instantly with VioraShare. No login, no account, no trace. Create a private room, upload files, and share a link — files auto-delete after 15 min, 1 hour, or 24 hours.",
+    url: "https://www.viorashare.online",
+    type: "website",
+    images: [{ url: "/icon.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
+
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "VioraShare",
+    "url": "https://www.viorashare.online",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "offers": { 
+      "@type": "Offer",
+      "price": "0", 
+      "priceCurrency": "USD" 
+    },
+    "description": "Free secure temporary file sharing with no login required."
+  };
+
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       {/* Background gradients for premium feel */}
       <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[120px] -z-10 pointer-events-none" />
@@ -24,6 +64,65 @@ export default function Home() {
         <Suspense fallback={<div className="w-full max-w-md mx-auto h-96 bg-card/60 animate-pulse rounded-xl" />}>
           <HomeForms />
         </Suspense>
+
+        <section className="max-w-4xl w-full mt-24 space-y-16 py-12 md:py-24 border-t border-muted-foreground/10">
+          <div className="space-y-6 text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Why VioraShare?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">No Account Needed</h3>
+                <p className="text-muted-foreground text-sm">Just create a room and share. No sign-up, no email, no passwords.</p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">Self-Destruct Mode</h3>
+                <p className="text-muted-foreground text-sm">Files are permanently deleted from our servers immediately after the first download.</p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">Flexible Expiry</h3>
+                <p className="text-muted-foreground text-sm">Choose how long your room lives: 15 minutes, 1 hour, or 24 hours.</p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">Room Passcodes</h3>
+                <p className="text-muted-foreground text-sm">Lock your sharing room with a passcode for extra privacy.</p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">Shared Clipboard & Chat</h3>
+                <p className="text-muted-foreground text-sm">Share text snippets and chat inside the room alongside your files.</p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">Zero Tracking</h3>
+                <p className="text-muted-foreground text-sm">We don&apos;t track IPs, set profiling cookies, or store personal data.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How It Works</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-2">
+                <div className="text-3xl font-black text-primary/20">1.</div>
+                <h3 className="text-lg font-bold">Create a Room</h3>
+                <p className="text-muted-foreground text-sm">Click to generate a private sharing room instantly.</p>
+              </div>
+              <div className="space-y-2">
+                <div className="text-3xl font-black text-primary/20">2.</div>
+                <h3 className="text-lg font-bold">Upload Your Files</h3>
+                <p className="text-muted-foreground text-sm">Add files, text, or links to your room.</p>
+              </div>
+              <div className="space-y-2">
+                <div className="text-3xl font-black text-primary/20">3.</div>
+                <h3 className="text-lg font-bold">Share the Link</h3>
+                <p className="text-muted-foreground text-sm">Send the room link. It expires automatically.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="max-w-2xl w-full mt-12 text-center">
+          <p className="text-muted-foreground font-medium leading-relaxed">
+            VioraShare is the easiest way to share files online without creating an account. Whether you need to send documents, images, or any file to a friend or colleague — VioraShare gives you a private, temporary room that disappears when you&apos;re done.
+          </p>
+        </div>
         
         <SocialLinks />
 

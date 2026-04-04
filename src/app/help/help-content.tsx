@@ -53,8 +53,25 @@ export default function HelpContent() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-24 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[150px] -z-10 pointer-events-none animate-pulse" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] -z-20 pointer-events-none scale-150 rotate-12">
@@ -93,7 +110,7 @@ export default function HelpContent() {
             <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
           </div>
           
-          <div className="grid gap-3">
+          <div id="faq-schema-container" className="grid gap-3">
             {faqs.map((faq, index) => (
               <motion.div 
                 key={index} 
@@ -105,7 +122,7 @@ export default function HelpContent() {
                   openIndex === index 
                   ? 'bg-white/[0.06] border-primary/30 shadow-2xl shadow-primary/5' 
                   : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
-                } backdrop-blur-2xl`}
+                } backdrop-blur-2xl overflow-hidden`}
               >
                 <button 
                   onClick={() => toggle(index)}
@@ -132,21 +149,19 @@ export default function HelpContent() {
                   </div>
                 </button>
                 
-                <AnimatePresence>
-                  {openIndex === index && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                      className="px-5 pb-6 ml-14"
-                    >
-                      <p className="text-zinc-400 leading-relaxed max-w-lg text-sm font-medium selection:bg-primary/40 selection:text-white">
-                        {faq.answer}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <motion.div 
+                  initial={false}
+                  animate={{ 
+                    height: openIndex === index ? "auto" : 0,
+                    opacity: openIndex === index ? 1 : 0
+                  }}
+                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                  className="px-5 pb-6 ml-14"
+                >
+                  <p className="text-zinc-400 leading-relaxed max-w-lg text-sm font-medium selection:bg-primary/40 selection:text-white">
+                    {faq.answer}
+                  </p>
+                </motion.div>
               </motion.div>
             ))}
           </div>

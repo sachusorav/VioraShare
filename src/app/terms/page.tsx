@@ -3,13 +3,8 @@ import TermsContent from "./terms-content";
 
 export const metadata: Metadata = {
   title: "Terms of Service - VioraShare | Free Secure File Sharing",
-  description: "VioraShare terms of service. Free, temporary file sharing with no login. Rooms auto-expire. No responsibility for user-shared content. Simple, fair terms.",
-  keywords: [
-    "VioraShare terms of service", "file sharing terms",
-    "temporary file sharing legal", "no login file sharing terms",
-    "secure file transfer policy", "viorashare terms"
-  ],
-  alternates: { canonical: "/terms" },
+  description: "Read VioraShare's terms of service. Use our platform responsibly for legal temporary file sharing. No monitoring, no accounts, your content is your responsibility.",
+  alternates: { canonical: "https://www.viorashare.online/terms" },
 };
 
 export default function TermsPage() {

@@ -3,13 +3,8 @@ import PrivacyContent from "./privacy-content";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - VioraShare | Zero Data Storage File Sharing",
-  description: "VioraShare's privacy policy. We store zero personal data, no login required, no tracking. Files and rooms auto-delete. GDPR-friendly private file sharing.",
-  keywords: [
-    "private file sharing privacy policy", "no tracking file sharing",
-    "GDPR file sharing", "anonymous file transfer privacy",
-    "zero data storage file sharing", "viorashare privacy"
-  ],
-  alternates: { canonical: "/privacy" },
+  description: "VioraShare's privacy policy. We collect no personal data, track no IPs, and all files are auto-deleted when your room expires. Built for privacy from the ground up.",
+  alternates: { canonical: "https://www.viorashare.online/privacy" },
 };
 
 export default function PrivacyPage() {
