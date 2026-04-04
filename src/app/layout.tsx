@@ -18,8 +18,8 @@ import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "VioraShare - Secure Temporary File Sharing",
-  description: "Send files securely with no login and no trace. Disposable rooms for frictionless temporary sharing.",
-  keywords: ["file sharing", "secure upload", "anonymous sharing", "temporary storage", "viorashare"],
+  description: "Tired of signing up just to send a file? VioraShare offers secure, temporary file sharing with No Logins, No Tracking, and Self-destructing rooms. 100% Frictionless.",
+  keywords: ["file sharing", "secure transfer", "anonymous upload", "temporary storage", "private sharing", "no login file share", "self-destructing files", "viorashare"],
   authors: [{ name: "Viora Team" }],
   creator: "VioraShare",
   publisher: "VioraShare",
@@ -78,7 +78,7 @@ export default function RootLayout({
     "name": "VioraShare",
     "operatingSystem": "Web",
     "applicationCategory": "ProductivityApplication",
-    "description": "Send files securely with no login and no trace. Disposable rooms for frictionless temporary sharing.",
+    "description": "Tired of signing up for a service just to send a single file? Introducing VioraShare. Secure, temporary file sharing with No Logins, No Tracking, and Self-destructing rooms. 100% Frictionless.",
     "url": "https://viorashare.online",
     "applicationSubCategory": "File Sharing",
     "offers": {
