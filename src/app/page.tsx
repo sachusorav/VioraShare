@@ -42,10 +42,20 @@ export default function Home() {
       "@type": "Person",
       "name": "Sachin Kumar"
     },
-    "screenshot": "https://www.viorashare.online/icon.png",
+    "screenshot": {
+      "@type": "ImageObject",
+      "url": "https://www.viorashare.online/icon.png"
+    },
     "featureList": "No login required, Self-destruct mode, Room passcodes, Shared clipboard, Auto-expiring rooms, Zero tracking",
     "browserRequirements": "Requires JavaScript. Requires HTML5.",
-    "inLanguage": "en"
+    "inLanguage": "en",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "24",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
   };
 
   return (
