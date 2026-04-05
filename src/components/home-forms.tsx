@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +12,17 @@ import { Loader2, Lock, KeyRound, UploadCloud, DownloadCloud, History, Trash2, A
 import { toast } from "sonner";
 import AdPortal from "@/components/ads/ad-portal";
 
+function JoinParamWatcher({ onJoinParam }: { onJoinParam: (id: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const joinParam = searchParams.get("join");
+    if (joinParam) onJoinParam(joinParam.toUpperCase());
+  }, [searchParams, onJoinParam]);
+  return null;
+}
+
 export function HomeForms() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const joinParam = searchParams.get("join");
   
   const [activeTab, setActiveTab] = useState("create");
   const [recentRooms, setRecentRooms] = useState<string[]>([]);
@@ -55,13 +62,6 @@ export function HomeForms() {
   const [joinRoomId, setJoinRoomId] = useState("");
   const [joinPasscode, setJoinPasscode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
-
-  useEffect(() => {
-    if (joinParam) {
-      setJoinRoomId(joinParam.toUpperCase());
-      setActiveTab("join");
-    }
-  }, [joinParam]);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +130,14 @@ export function HomeForms() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <JoinParamWatcher
+          onJoinParam={(id) => {
+            setJoinRoomId(id);
+            setActiveTab("join");
+          }}
+        />
+      </Suspense>
       <AdPortal isOpen={showAd} onComplete={doCreateRoom} />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-8">
@@ -228,7 +236,7 @@ export function HomeForms() {
       </TabsContent>
 
       {recentRooms.length > 0 && (
-        <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+        <div className="mt-12 animate-in fade-in duration-300">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center">
               <History className="w-3 h-3 mr-2" /> Recent Rooms

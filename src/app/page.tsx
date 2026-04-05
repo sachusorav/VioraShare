@@ -1,3 +1,6 @@
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Image from "next/image";
@@ -66,10 +69,10 @@ export default function Home() {
       />
       
       {/* Background gradients for premium feel */}
-      <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[80px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[80px] -z-10 pointer-events-none" />
       
-      <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-12 md:mt-24">
+      <div className="text-center mb-12 animate-in fade-in duration-300 mt-12 md:mt-24">
         <h1 className="text-6xl md:text-7xl font-bold font-heading tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
           VioraShare.
         </h1>
