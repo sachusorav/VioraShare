@@ -57,11 +57,39 @@ export function HomeForms() {
   const [isCreating, setIsCreating] = useState(false);
   const [showAd, setShowAd] = useState(false);
   const [pendingCreate, setPendingCreate] = useState(false);
+  const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   // Join Room State
   const [joinRoomId, setJoinRoomId] = useState("");
   const [joinPasscode, setJoinPasscode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+
+  // This starts the room creation in the background while the ad is showing
+  const startRoomCreation = async (passcode: string, expiry: string) => {
+    setIsCreating(true);
+    setCreateError(null);
+    try {
+      const res = await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: passcode, expiresIn: parseInt(expiry) }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "Failed to create room");
+      
+      setPendingRoomId(data.roomId);
+      saveRecentRoom(data.roomId);
+    } catch (error: any) {
+      setCreateError(error.message);
+      toast.error(error.message);
+      setShowAd(false); // Close ad portal if creation fails
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,35 +97,43 @@ export function HomeForms() {
       toast.error("Please enter a passcode to secure your room.");
       return;
     }
-    // Show the Ad Portal first, then create the room
+    
+    // Start background creation immediately
     setPendingCreate(true);
+    startRoomCreation(createPasscode, expiresIn);
+    
+    // Show the Ad Portal simultaneously
     setShowAd(true);
   };
 
-  const doCreateRoom = async () => {
-    setShowAd(false);
-    setIsCreating(true);
-    try {
-      const res = await fetch("/api/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passcode: createPasscode, expiresIn: parseInt(expiresIn) }),
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.error || "Failed to create room");
-      
+  // This is called when the Ad Portal countdown finishes
+  const handleAdComplete = () => {
+    setPendingCreate(false);
+    // If room is already created, redirect immediately
+    if (pendingRoomId) {
+      router.push(`/room/${pendingRoomId}`);
       toast.success("Room created successfully!");
-      saveRecentRoom(data.roomId);
-      router.push(`/room/${data.roomId}`);
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsCreating(false);
-      setPendingCreate(false);
+    } else if (createError) {
+      setShowAd(false);
+    } else {
+      // If still creating, the useEffect below will handle it
+      // or we can just wait 
     }
   };
+
+  // Redirect as soon as both conditions are met: Ad finished (showAd is still true but handleAdComplete was called)
+  // Actually, let's keep it simple: handleAdComplete is the trigger.
+  // If creation is slow, handleAdComplete will wait.
+  
+  useEffect(() => {
+    // If ad is finished and we have a room ID, redirect
+    // We use pendingCreate as a flag that handleAdComplete hasn't finished yet
+    if (!pendingCreate && pendingRoomId && showAd) {
+      router.push(`/room/${pendingRoomId}`);
+      toast.success("Room created successfully!");
+      setShowAd(false);
+    }
+  }, [pendingCreate, pendingRoomId, showAd, router]);
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +174,7 @@ export function HomeForms() {
           }}
         />
       </Suspense>
-      <AdPortal isOpen={showAd} onComplete={doCreateRoom} />
+      <AdPortal isOpen={showAd} onComplete={handleAdComplete} />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-8">
         <TabsTrigger value="create" className="text-md py-3"><UploadCloud className="w-4 h-4 mr-2"/> Create Room</TabsTrigger>
