@@ -4,7 +4,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Copy, Plus, Link as LinkIcon, StickyNote } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,7 +26,7 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
 
     const optimisticNote = {
       id: `opt-${Date.now()}`,
-      content: content.trim(),
+      content: content, // Removed .trim() to preserve intentional spacing if any, though trailing trim is usually fine.
       createdAt: new Date().toISOString(),
       roomId,
     };
@@ -69,24 +69,26 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={addNote} className="flex gap-2">
-        <Input
-          placeholder="Paste a link or type a note..."
+      <form onSubmit={addNote} className="flex flex-col gap-3">
+        <Textarea
+          placeholder="Paste code snippets, links, or multi-line notes..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="bg-background/50 backdrop-blur"
+          className="bg-background/50 backdrop-blur min-h-[120px] resize-none"
         />
-        <Button type="submit" disabled={!content.trim()}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={!content.trim()} className="w-full sm:w-auto">
+            <Plus className="w-4 h-4 mr-2" />
+            Add to Room Clipboard
+          </Button>
+        </div>
       </form>
 
       <div className="grid grid-cols-1 gap-4">
         {isLoading && notes.length === 0 ? (
           <div className="h-24 bg-muted/20 animate-pulse rounded-xl" />
         ) : notes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
             <StickyNote className="w-8 h-8 mb-2 opacity-50" />
             <p>Your shared clipboard is empty.</p>
           </div>
@@ -100,42 +102,42 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
                 layout
               >
                 <Card className={`bg-card/60 backdrop-blur shadow-sm hover:shadow-md transition-all border-border/50 group ${note.id.startsWith('opt-') ? 'border-primary/40' : ''}`}>
-                  <CardContent className="p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="p-2 bg-muted/50 rounded-lg shrink-0">
+                  <CardContent className="p-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 overflow-hidden w-full">
+                      <div className="p-2 bg-muted/50 rounded-lg shrink-0 mt-0.5">
                         {isUrl(note.content) ? (
                           <LinkIcon className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-blue-500'}`} />
                         ) : (
                           <StickyNote className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
                         )}
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         {isUrl(note.content) ? (
                           <a 
                             href={note.content} 
                             target="_blank" 
                             rel="noreferrer" 
-                            className="text-sm font-medium text-blue-500 hover:underline truncate block"
+                            className="text-sm font-medium text-blue-500 hover:underline break-all block"
                           >
                             {note.content}
                           </a>
                         ) : (
-                          <p className="text-sm font-medium truncate" title={note.content}>
+                          <p className="text-sm font-medium whitespace-pre-wrap break-words leading-relaxed" title={note.content}>
                             {note.content}
                           </p>
                         )}
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {note.id.startsWith('opt-') ? "Saving..." : new Date(note.createdAt).toLocaleTimeString()}
+                        <p className="text-[10px] text-muted-foreground mt-2 font-bold uppercase tracking-widest">
+                          {note.id.startsWith('opt-') ? "Saving to room..." : new Date(note.createdAt).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="shrink-0 h-8 w-8 sm:opacity-0 group-hover:opacity-100 transition-opacity self-end sm:self-start"
                       onClick={() => copyToClipboard(note.content)}
                     >
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5" />
                     </Button>
                   </CardContent>
                 </Card>

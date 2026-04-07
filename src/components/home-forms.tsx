@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Lock, KeyRound, UploadCloud, DownloadCloud, History, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-import AdPortal from "@/components/ads/ad-portal";
-
 function JoinParamWatcher({ onJoinParam }: { onJoinParam: (id: string) => void }) {
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -55,41 +53,11 @@ export function HomeForms() {
   const [createPasscode, setCreatePasscode] = useState("");
   const [expiresIn, setExpiresIn] = useState("60"); // default 1 hour
   const [isCreating, setIsCreating] = useState(false);
-  const [showAd, setShowAd] = useState(false);
-  const [pendingCreate, setPendingCreate] = useState(false);
-  const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
-  const [createError, setCreateError] = useState<string | null>(null);
 
   // Join Room State
   const [joinRoomId, setJoinRoomId] = useState("");
   const [joinPasscode, setJoinPasscode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
-
-  // This starts the room creation in the background while the ad is showing
-  const startRoomCreation = async (passcode: string, expiry: string) => {
-    setIsCreating(true);
-    setCreateError(null);
-    try {
-      const res = await fetch("/api/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passcode: passcode, expiresIn: parseInt(expiry) }),
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.error || "Failed to create room");
-      
-      setPendingRoomId(data.roomId);
-      saveRecentRoom(data.roomId);
-    } catch (error: any) {
-      setCreateError(error.message);
-      toast.error(error.message);
-      setShowAd(false); // Close ad portal if creation fails
-    } finally {
-      setIsCreating(false);
-    }
-  };
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,42 +66,27 @@ export function HomeForms() {
       return;
     }
     
-    // Start background creation immediately
-    setPendingCreate(true);
-    startRoomCreation(createPasscode, expiresIn);
-    
-    // Show the Ad Portal simultaneously
-    setShowAd(true);
-  };
-
-  // This is called when the Ad Portal countdown finishes
-  const handleAdComplete = () => {
-    setPendingCreate(false);
-    // If room is already created, redirect immediately
-    if (pendingRoomId) {
-      router.push(`/room/${pendingRoomId}`);
+    setIsCreating(true);
+    try {
+      const res = await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: createPasscode, expiresIn: parseInt(expiresIn) }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "Failed to create room");
+      
       toast.success("Room created successfully!");
-    } else if (createError) {
-      setShowAd(false);
-    } else {
-      // If still creating, the useEffect below will handle it
-      // or we can just wait 
+      saveRecentRoom(data.roomId);
+      router.push(`/room/${data.roomId}`);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsCreating(false);
     }
   };
-
-  // Redirect as soon as both conditions are met: Ad finished (showAd is still true but handleAdComplete was called)
-  // Actually, let's keep it simple: handleAdComplete is the trigger.
-  // If creation is slow, handleAdComplete will wait.
-  
-  useEffect(() => {
-    // If ad is finished and we have a room ID, redirect
-    // We use pendingCreate as a flag that handleAdComplete hasn't finished yet
-    if (!pendingCreate && pendingRoomId && showAd) {
-      router.push(`/room/${pendingRoomId}`);
-      toast.success("Room created successfully!");
-      setShowAd(false);
-    }
-  }, [pendingCreate, pendingRoomId, showAd, router]);
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,7 +127,6 @@ export function HomeForms() {
           }}
         />
       </Suspense>
-      <AdPortal isOpen={showAd} onComplete={handleAdComplete} />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-8">
         <TabsTrigger value="create" className="text-md py-3"><UploadCloud className="w-4 h-4 mr-2"/> Create Room</TabsTrigger>
@@ -218,9 +170,9 @@ export function HomeForms() {
               </div>
             </CardContent>
             <CardFooter className="pt-4 pb-4">
-              <Button type="submit" className="w-full font-semibold" disabled={isCreating || pendingCreate}>
+              <Button type="submit" className="w-full font-semibold" disabled={isCreating}>
                 {isCreating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                {isCreating ? "Creating..." : pendingCreate ? "Securing..." : "Create Room"}
+                {isCreating ? "Creating..." : "Create Room"}
               </Button>
             </CardFooter>
           </form>
