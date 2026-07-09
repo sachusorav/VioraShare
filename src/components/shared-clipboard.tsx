@@ -85,9 +85,7 @@ export function SharedClipboard({ roomId, notes }: { roomId: string, notes: any[
       </form>
 
       <div className="grid grid-cols-1 gap-4">
-        {isLoading && notes.length === 0 ? (
-          <div className="h-24 bg-muted/20 animate-pulse rounded-xl" />
-        ) : displayNotes.length === 0 ? (
+        {displayNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
             <StickyNote className="w-8 h-8 mb-2 opacity-50" />
             <p>Your shared clipboard is empty.</p>
