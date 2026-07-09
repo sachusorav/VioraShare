@@ -25,6 +25,7 @@ model File {
   size          Int
   mimeType      String
   path          String   // Local path or URL
+  thumbnail     String?
   createdAt     DateTime @default(now())
   selfDestruct  Boolean  @default(false)
   downloadCount Int      @default(0)

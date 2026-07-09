@@ -29,6 +29,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Room is invalid or expired" }, { status: 410 });
     }
 
+    const thumbnail = formData.get("thumbnail") as string;
+
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const uniqueName = `${roomId}/${Date.now()}-${safeName}`;
 
@@ -44,6 +46,7 @@ export async function POST(req: Request) {
         size: file.size,
         mimeType: file.type,
         path: blob.url,
+        thumbnail: thumbnail || null,
         selfDestruct,
       },
     });

@@ -67,22 +67,27 @@ export function HomeForms() {
     }
     
     setIsCreating(true);
+
+    // Optimistic UI: generate room ID client-side and navigate instantly (<100ms)
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let tempId = "";
+    for (let i = 0; i < 6; i++) tempId += chars.charAt(Math.floor(Math.random() * chars.length));
+    router.push(`/room/${tempId}`);
+
+    // Resolve creation in background silently
     try {
       const res = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passcode: createPasscode, expiresIn: parseInt(expiresIn) }),
+        body: JSON.stringify({ passcode: createPasscode, expiresIn: parseInt(expiresIn), roomId: tempId }),
       });
       
       const data = await res.json();
-      
       if (!res.ok) throw new Error(data.error || "Failed to create room");
-      
-      toast.success("Room created successfully!");
       saveRecentRoom(data.roomId);
-      router.push(`/room/${data.roomId}`);
     } catch (error: any) {
       toast.error(error.message);
+      router.push("/"); // redirect back on failure
     } finally {
       setIsCreating(false);
     }

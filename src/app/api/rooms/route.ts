@@ -14,15 +14,15 @@ function generateRoomId() {
 
 export async function POST(req: Request) {
   try {
-    const { passcode, expiresIn } = await req.json();
+    const { passcode, expiresIn, roomId: clientRoomId } = await req.json();
 
     if (!passcode) {
       return NextResponse.json({ error: "Passcode is required" }, { status: 400 });
     }
 
-    const roomId = generateRoomId();
+    const roomId = clientRoomId || generateRoomId();
     const expiresAt = new Date(Date.now() + parseInt(expiresIn) * 60 * 1000);
-    const hashedPasscode = await bcrypt.hash(passcode, 10);
+    const hashedPasscode = await bcrypt.hash(passcode, 8); // Reduced from 10→8 for serverless cold-start performance (still secure for 24h rooms)
 
     const room = await prisma.room.create({
       data: {

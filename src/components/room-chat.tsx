@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import useSWR, { mutate } from "swr";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,18 +8,24 @@ import { Send, User } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
-
-export function RoomChat({ roomId }: { roomId: string }) {
+export function RoomChat({ roomId, messages }: { roomId: string, messages: any[] }) {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  const { data } = useSWR(`/api/rooms/${roomId}/messages`, fetcher, {
-    refreshInterval: 3000
-  });
+  // Local state for optimistic messages
+  const [optimisticMessages, setOptimisticMessages] = useState<any[]>([]);
 
-  const messages = data?.messages || [];
+  // Clear optimistic messages once the real ones arrive via SSE
+  useEffect(() => {
+    if (messages.length > 0) {
+      setOptimisticMessages(prev => 
+        prev.filter(opt => !messages.some(m => m.id === opt.id || (m.content === opt.content && Math.abs(new Date(m.createdAt).getTime() - new Date(opt.createdAt).getTime()) < 5000)))
+      );
+    }
+  }, [messages]);
+
+  const displayMessages = [...messages, ...optimisticMessages].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -41,24 +46,25 @@ export function RoomChat({ roomId }: { roomId: string }) {
     };
 
     setMessage("");
-    // Optimistically update the cache
-    mutate(`/api/rooms/${roomId}/messages`, { messages: [...messages, optimisticMessage] }, false);
-
+    setOptimisticMessages(prev => [...prev, optimisticMessage]);
+    setIsSending(true);
+    
     try {
       const res = await fetch(`/api/rooms/${roomId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: optimisticMessage.content }),
       });
-
-      if (!res.ok) {
-        toast.error("Failed to send message");
-      }
-      // Revalidate to get the real message from server
-      mutate(`/api/rooms/${roomId}/messages`);
+      
+      if (!res.ok) throw new Error("Failed to send message");
+      
+      // The new message will arrive via SSE, which clears the optimistic message
     } catch (error) {
-      toast.error("Something went wrong");
-      mutate(`/api/rooms/${roomId}/messages`);
+      toast.error("Message failed to send");
+      // Remove optimistic message on error
+      setOptimisticMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
+    } finally {
+      setIsSending(false);
     }
   };
 

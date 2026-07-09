@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import useSWR, { mutate } from "swr";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,16 +8,22 @@ import { Copy, Plus, Link as LinkIcon, StickyNote } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
-
-export function SharedClipboard({ roomId }: { roomId: string }) {
+export function SharedClipboard({ roomId, notes }: { roomId: string, notes: any[] }) {
   const [content, setContent] = useState("");
   
-  const { data, isLoading } = useSWR(`/api/rooms/${roomId}/notes`, fetcher, {
-    refreshInterval: 5000
-  });
+  // Local state for optimistic notes
+  const [optimisticNotes, setOptimisticNotes] = useState<any[]>([]);
 
-  const notes = data?.notes || [];
+  // Clear optimistic notes once the real ones arrive via SSE
+  useEffect(() => {
+    if (notes.length > 0) {
+      setOptimisticNotes(prev => 
+        prev.filter(opt => !notes.some(n => n.id === opt.id || (n.content === opt.content && Math.abs(new Date(n.createdAt).getTime() - new Date(opt.createdAt).getTime()) < 5000)))
+      );
+    }
+  }, [notes]);
+
+  const displayNotes = [...optimisticNotes, ...notes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const addNote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +37,7 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
     };
 
     setContent("");
-    // Optimistically update the cache
-    mutate(`/api/rooms/${roomId}/notes`, { notes: [optimisticNote, ...notes] }, false);
+    setOptimisticNotes(prev => [optimisticNote, ...prev]);
 
     try {
       const res = await fetch(`/api/rooms/${roomId}/notes`, {
@@ -41,15 +45,11 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: optimisticNote.content }),
       });
-
-      if (!res.ok) {
-        toast.error("Failed to add note");
-      }
-      // Revalidate to get the real note from server
-      mutate(`/api/rooms/${roomId}/notes`);
+      
+      if (!res.ok) throw new Error("Failed to add note");
     } catch (error) {
-      toast.error("Something went wrong");
-      mutate(`/api/rooms/${roomId}/notes`);
+      toast.error("Failed to add note");
+      setOptimisticNotes(prev => prev.filter(n => n.id !== optimisticNote.id));
     }
   };
 
@@ -87,14 +87,14 @@ export function SharedClipboard({ roomId }: { roomId: string }) {
       <div className="grid grid-cols-1 gap-4">
         {isLoading && notes.length === 0 ? (
           <div className="h-24 bg-muted/20 animate-pulse rounded-xl" />
-        ) : notes.length === 0 ? (
+        ) : displayNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
             <StickyNote className="w-8 h-8 mb-2 opacity-50" />
             <p>Your shared clipboard is empty.</p>
           </div>
         ) : (
           <AnimatePresence initial={false}>
-            {notes.map((note: any) => (
+            {displayNotes.map((note: any) => (
               <motion.div
                 key={note.id}
                 initial={{ opacity: 0, y: -10 }}

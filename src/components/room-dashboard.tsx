@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import useSWR, { mutate } from "swr";
+import { useRoomStream } from "@/hooks/useRoomStream";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +10,8 @@ import { Copy, UploadCloud, File, Download, SearchIcon, ImageIcon, FileTextIcon,
 import { toast } from "sonner";
 import { File as PrismaFile } from "@prisma/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { QRCodeSVG } from 'qrcode.react';
+import dynamic from "next/dynamic";
+const QRCodeSVG = dynamic(() => import("qrcode.react").then((m) => m.QRCodeSVG), { ssr: false });
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SharedClipboard } from "./shared-clipboard";
 import { RoomChat } from "./room-chat";
@@ -19,9 +20,29 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { RoomCountdown } from "./room-countdown";
-import JSZip from "jszip";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+async function generateThumbnail(file: File): Promise<string | null> {
+  if (file.type.startsWith("image/")) {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const size = 200;
+        const scale = Math.min(size / img.width, size / img.height);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
+        URL.revokeObjectURL(objectUrl);
+      };
+      img.onerror = () => resolve(null);
+      img.src = objectUrl;
+    });
+  }
+  return null;
+}
 
 export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFiles: PrismaFile[], roomId: string, expiresAt: string }) {
   const [mounted, setMounted] = useState(false);
@@ -45,23 +66,22 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
     window.location.hash = value;
   };
   
-  const { data } = useSWR(`/api/rooms/${roomId}`, fetcher, { 
-    refreshInterval: 5000,
-    revalidateOnFocus: false,
-    fallbackData: { room: { files: initialFiles } } 
-  });
-  
-  const liveFiles: PrismaFile[] = data?.room?.files || initialFiles;
+  const { files: streamFiles, messages: streamMessages, notes: streamNotes, connected } = useRoomStream(roomId);
+  const liveFiles: PrismaFile[] = streamFiles.length > 0 ? streamFiles : initialFiles;
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) => {
+    for (const file of acceptedFiles) {
       const tempId = `upload-${Date.now()}-${file.name}`;
       setUploadProgress((prev: Record<string, number>) => ({ ...prev, [tempId]: 0 }));
+
+      // Generate thumbnail client-side before upload
+      const thumbnail = await generateThumbnail(file);
 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("roomId", roomId);
       formData.append("selfDestruct", selfDestruct.toString());
+      if (thumbnail) formData.append("thumbnail", thumbnail);
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "/api/upload", true);
@@ -76,7 +96,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
       xhr.onload = () => {
         if (xhr.status === 200) {
           toast.success(`Uploaded ${file.name}`);
-          mutate(`/api/rooms/${roomId}`); 
+          // SSE stream will pick up the new file automatically
         } else {
           toast.error(`Failed to upload ${file.name}`);
         }
@@ -97,10 +117,10 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
       };
 
       xhr.send(formData);
-    });
+    }
   }, [roomId, selfDestruct]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({ onDrop, noClick: true });
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith("image/")) return <ImageIcon className="w-8 h-8 text-blue-500" />;
@@ -118,6 +138,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const downloadAllFiles = async () => {
     if (liveFiles.length === 0) return;
     setIsZipping(true);
+    const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
     
     try {
@@ -149,7 +170,8 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   };
 
   return (
-    <div className="flex flex-col gap-6 flex-1">
+    <div {...getRootProps()} className={`flex flex-col gap-6 flex-1${isDragActive ? " ring-2 ring-primary ring-inset rounded-xl" : ""}`}>
+      <input {...getInputProps()} />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 p-0.5 rounded-full bg-gradient-to-tr from-primary to-blue-600 shadow-xl flex-shrink-0 ring-2 ring-background">
@@ -170,6 +192,9 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Room Active" />
               <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Live Session</span>
+              <span className={`text-[10px] font-bold uppercase tracking-widest ${connected ? "text-green-500" : "text-orange-400 animate-pulse"}`}>
+                · {connected ? "Connected" : "Reconnecting..."}
+              </span>
             </div>
           </div>
         </div>
@@ -225,10 +250,9 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
           >
             <div className="flex flex-col gap-4">
               <Card 
-                {...getRootProps()} 
+                onClick={openFilePicker}
                 className={`border-dashed border-2 cursor-pointer transition-colors bg-card/40 backdrop-blur shadow-none h-48 flex flex-col items-center justify-center ${isDragActive ? "border-primary bg-primary/5" : "border-border/60 hover:border-primary/50 hover:bg-muted/20"}`}
               >
-                <input {...getInputProps()} />
                 <CardContent className="flex flex-col items-center justify-center pt-6 text-center">
                   <UploadCloud className={`w-12 h-12 mb-4 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
                   <h3 className="font-semibold text-lg mb-1">
@@ -365,7 +389,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <SharedClipboard roomId={roomId} />
+            <SharedClipboard roomId={roomId} notes={streamNotes} />
           </motion.div>
         </TabsContent>
 
@@ -376,7 +400,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             transition={{ duration: 0.4 }}
           >
             <Card className="bg-card/40 backdrop-blur border-border/50">
-              <RoomChat roomId={roomId} />
+              <RoomChat roomId={roomId} messages={streamMessages} />
             </Card>
           </motion.div>
         </TabsContent>
