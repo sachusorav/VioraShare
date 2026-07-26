@@ -99,59 +99,55 @@ export function AdminDashboardClient({ stats, chartData, recentRooms: initialRec
       </div>
 
       {/* Grid Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-card/40 backdrop-blur border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Rooms Now</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+            <CardTitle className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Active Rooms</CardTitle>
             <Clock className="w-4 h-4 text-primary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.activeRooms}</div>
-            <p className="text-xs text-muted-foreground mt-1">Currently live on site</p>
+          <CardContent className="px-4 pb-4">
+            <div className="text-2xl sm:text-3xl font-bold">{stats.activeRooms}</div>
+            <p className="text-xs text-muted-foreground mt-1">Currently live</p>
           </CardContent>
         </Card>
 
         <Card className="bg-card/40 backdrop-blur border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Storage Used</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+            <CardTitle className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Storage Used</CardTitle>
             <HardDrive className="w-4 h-4 text-blue-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{formatBytes(stats.totalStorageBytes)}</div>
-            <p className="text-xs text-muted-foreground mt-1">{stats.totalFiles} files uploaded</p>
+          <CardContent className="px-4 pb-4">
+            <div className="text-2xl sm:text-3xl font-bold">{formatBytes(stats.totalStorageBytes)}</div>
+            <p className="text-xs text-muted-foreground mt-1">{stats.totalFiles} files</p>
           </CardContent>
         </Card>
 
         <Card className="bg-card/40 backdrop-blur border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Rooms Created</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+            <CardTitle className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Rooms Created</CardTitle>
             <FolderOpen className="w-4 h-4 text-green-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.allTimeRooms}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {stats.todayRooms} today • {stats.weekRooms} this week
-            </p>
+          <CardContent className="px-4 pb-4">
+            <div className="text-2xl sm:text-3xl font-bold">{stats.allTimeRooms}</div>
+            <p className="text-xs text-muted-foreground mt-1">{stats.todayRooms} today</p>
           </CardContent>
         </Card>
 
         <Card className="bg-card/40 backdrop-blur border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Access Security</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+            <CardTitle className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Passcode Rate</CardTitle>
             <ShieldAlert className="w-4 h-4 text-orange-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
+          <CardContent className="px-4 pb-4">
+            <div className="text-2xl sm:text-3xl font-bold">
               {Math.round((stats.passcodedCount / (stats.allTimeRooms || 1)) * 100)}%
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {stats.passcodedCount} locked • {stats.noPasscodeCount} open
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{stats.passcodedCount} locked</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Chart */}
         <Card className="col-span-2 bg-card/40 backdrop-blur border-border/50">
           <CardHeader>

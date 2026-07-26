@@ -62,7 +62,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden min-h-screen">
+    <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 relative overflow-hidden min-h-screen w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
