@@ -3,21 +3,22 @@ export const revalidate = false;
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { HomeForms } from "@/components/home-forms";
 import { SocialLinks } from "@/components/social-links";
+import { ComparisonStrip } from "@/components/comparison-strip";
+import { ShieldCheck, Timer, Ghost, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "VioraShare - Free Secure File Sharing | No Login Required",
-  description: "Share files instantly with VioraShare. No login, no account, no trace. Create a private room, upload files, and share a link — files auto-delete after 15 min, 1 hour, or 24 hours.",
-  keywords: "free file sharing, no login file sharing, temporary file sharing, secure file transfer, anonymous file sharing, share files online, no account file sharing",
+  title: "VioraShare - Send Files Without Login | Auto-Delete File Sharing",
+  description: "Send files too big, too sensitive, or too private for WhatsApp. No login. No account. Files auto-delete after 15 min, 1 hour, or 24 hours. Faster and more private than Google Drive.",
+  keywords: "free file sharing, no login file sharing, temporary file sharing, secure file transfer, anonymous file sharing, share files online, no account file sharing, whatsapp alternative file sharing",
   alternates: {
     canonical: "https://www.viorashare.online",
   },
   openGraph: {
-    title: "VioraShare - Free Secure File Sharing | No Login Required",
-    description: "Share files instantly with VioraShare. No login, no account, no trace. Create a private room, upload files, and share a link — files auto-delete after 15 min, 1 hour, or 24 hours.",
+    title: "VioraShare - Send Files Without Login | Auto-Delete File Sharing",
+    description: "Send files too big, too sensitive, or too private for WhatsApp. No login. No account. Auto-deletes. Done in seconds.",
     url: "https://www.viorashare.online",
     type: "website",
     images: [{ url: "/icon.png" }],
@@ -27,6 +28,13 @@ export const metadata: Metadata = {
   },
 };
 
+const trustBadges = [
+  { icon: ShieldCheck, label: "No account needed" },
+  { icon: Timer, label: "Auto-deletes" },
+  { icon: Ghost, label: "Zero traces" },
+  { icon: Zap, label: "Done in seconds" },
+];
+
 export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -35,19 +43,15 @@ export default function Home() {
     "url": "https://www.viorashare.online",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web",
-    "offers": { 
+    "offers": {
       "@type": "Offer",
-      "price": "0", 
-      "priceCurrency": "USD" 
+      "price": "0",
+      "priceCurrency": "USD"
     },
-    "description": "Free secure temporary file sharing with no login required.",
+    "description": "Send files too big, too sensitive, or too private for WhatsApp. No login required. Auto-deletes.",
     "author": {
       "@type": "Person",
       "name": "Sachin Kumar"
-    },
-    "screenshot": {
-      "@type": "ImageObject",
-      "url": "https://www.viorashare.online/icon.png"
     },
     "featureList": "No login required, Self-destruct mode, Room passcodes, Shared clipboard, Auto-expiring rooms, Zero tracking",
     "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -62,112 +66,128 @@ export default function Home() {
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 relative overflow-hidden min-h-screen w-full">
+    <main className="flex-1 flex flex-col items-center px-4 py-6 relative overflow-hidden min-h-screen w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
-      {/* Background gradients for premium feel */}
-      <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[80px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[80px] -z-10 pointer-events-none" />
-      
-      <div className="text-center mb-6 animate-in fade-in duration-300 mt-6 md:mt-10">
-        <h1 className="text-5xl md:text-6xl font-bold font-heading tracking-tight mb-2 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
-          VioraShare.
-        </h1>
-        <p className="text-base md:text-lg text-muted-foreground font-medium">
-          Send files. No login. No trace.
-        </p>
-      </div>
 
-      <div className="w-full animate-in fade-in zoom-in-95 duration-1000 delay-150 relative z-10 p-2 md:p-6 pb-24 flex flex-col items-center">
-        <Suspense fallback={<div className="w-full max-w-md mx-auto h-96 bg-card/60 animate-pulse rounded-xl" />}>
+      {/* Background gradients */}
+      <div className="absolute top-0 left-[5%] w-[50%] h-[50%] rounded-full bg-primary/15 blur-[100px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-[5%] right-[5%] w-[45%] h-[45%] rounded-full bg-blue-500/15 blur-[100px] -z-10 pointer-events-none" />
+
+      {/* ── Hero ── */}
+      <section className="w-full max-w-2xl mx-auto text-center mt-8 md:mt-12 mb-8 animate-in fade-in duration-500">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-5">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Free · Anonymous · Instant
+        </div>
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-heading tracking-tight leading-[1.1] mb-4">
+          Send files too{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/60">
+            big, too sensitive,
+          </span>
+          <br className="hidden sm:block" />
+          {" "}or too private for WhatsApp.
+        </h1>
+
+        <p className="text-base sm:text-lg text-muted-foreground font-medium mb-6 max-w-xl mx-auto leading-relaxed">
+          No login. No account. Files auto-delete after your chosen time.{" "}
+          <span className="text-foreground/80 font-semibold">Done in seconds.</span>
+        </p>
+
+        {/* Trust badges */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          {trustBadges.map(({ icon: Icon, label }) => (
+            <span
+              key={label}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/60 border border-border/50 text-xs font-semibold text-muted-foreground backdrop-blur"
+            >
+              <Icon className="w-3.5 h-3.5 text-primary" />
+              {label}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Upload Flow (visual centerpiece) ── */}
+      <div className="w-full max-w-md mx-auto animate-in fade-in zoom-in-95 duration-500 delay-100">
+        <Suspense fallback={<div className="w-full h-72 bg-card/60 animate-pulse rounded-2xl" />}>
           <HomeForms />
         </Suspense>
-
-        <section className="max-w-4xl w-full mt-24 space-y-16 py-12 md:py-24 border-t border-muted-foreground/10">
-          <div className="space-y-6 text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Why VioraShare?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">No Account Needed</h3>
-                <p className="text-muted-foreground text-sm">Just create a room and share. No sign-up, no email, no passwords.</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Self-Destruct Mode</h3>
-                <p className="text-muted-foreground text-sm">Files are permanently deleted from our servers immediately after the first download.</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Flexible Expiry</h3>
-                <p className="text-muted-foreground text-sm">Choose how long your room lives: 15 minutes, 1 hour, or 24 hours.</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Room Passcodes</h3>
-                <p className="text-muted-foreground text-sm">Lock your sharing room with a passcode for extra privacy.</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Shared Clipboard & Chat</h3>
-                <p className="text-muted-foreground text-sm">Share text snippets and chat inside the room alongside your files.</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Zero Tracking</h3>
-                <p className="text-muted-foreground text-sm">We don&apos;t track IPs, set profiling cookies, or store personal data.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6 text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How It Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-2">
-                <div className="text-3xl font-black text-primary/20">1.</div>
-                <h3 className="text-lg font-bold">Create a Room</h3>
-                <p className="text-muted-foreground text-sm">Click to generate a private sharing room instantly.</p>
-              </div>
-              <div className="space-y-2">
-                <div className="text-3xl font-black text-primary/20">2.</div>
-                <h3 className="text-lg font-bold">Upload Your Files</h3>
-                <p className="text-muted-foreground text-sm">Add files, text, or links to your room.</p>
-              </div>
-              <div className="space-y-2">
-                <div className="text-3xl font-black text-primary/20">3.</div>
-                <h3 className="text-lg font-bold">Share the Link</h3>
-                <p className="text-muted-foreground text-sm">Send the room link. It expires automatically.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="max-w-2xl w-full mt-12 text-center">
-          <p className="text-muted-foreground font-medium leading-relaxed">
-            VioraShare is the easiest way to share files online without creating an account. Whether you need to send documents, images, or any file to a friend or colleague — VioraShare gives you a private, temporary room that disappears when you&apos;re done.
-          </p>
-        </div>
-        
-        <SocialLinks />
-
-        <footer className="mt-12 text-center text-[10px] text-muted-foreground/40 space-y-3">
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/help" className="hover:text-primary transition-colors">Help & FAQ</Link>
-            <Link href="/support" className="hover:text-primary transition-colors font-bold">Support Us</Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
-          </div>
-          <div className="flex items-center justify-center">
-            <Link 
-              href="https://www.linkedin.com/posts/sachinkumar014_viorashare-secure-temporary-file-sharing-activity-7442886400578084864-Mbf7" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-primary transition-all duration-300 py-1 px-3 rounded-full bg-muted/20 border border-muted-foreground/10"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-              <span className="font-bold tracking-tight">Official Announcement</span>
-            </Link>
-          </div>
-          <p>© 2026 VioraShare by Sachin Kumar. All rights reserved.</p>
-        </footer>
       </div>
+
+      {/* ── Comparison Strip ── */}
+      <div className="w-full max-w-2xl mx-auto animate-in fade-in duration-700 delay-200">
+        <ComparisonStrip />
+      </div>
+
+      {/* ── Why VioraShare feature grid ── */}
+      <section className="w-full max-w-4xl mx-auto mt-16 mb-8 space-y-12 py-12 border-t border-muted-foreground/10">
+        <div className="space-y-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Why VioraShare?</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "No Account Needed", desc: "Just create a room and share. No sign-up, no email, no passwords." },
+              { title: "Self-Destruct Mode", desc: "Files are permanently deleted after the first download — zero traces." },
+              { title: "Flexible Expiry", desc: "Choose 15 minutes, 1 hour, or 24 hours — your files, your rules." },
+              { title: "Room Passcodes", desc: "Lock your sharing room with a passcode for extra privacy." },
+              { title: "Shared Clipboard & Chat", desc: "Share text snippets and chat alongside your files in real-time." },
+              { title: "Zero Tracking", desc: "We don't track IPs, set profiling cookies, or store personal data." },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="p-5 rounded-xl bg-card/30 border border-border/40 backdrop-blur text-left space-y-1.5 hover:bg-card/50 transition-colors"
+              >
+                <h3 className="text-base font-bold">{item.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="space-y-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">3 Steps. No friction.</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { step: "1", title: "Create a Room", desc: "Instant private room — no sign-up needed." },
+              { step: "2", title: "Upload Your Files", desc: "Drop files, add text, or paste links." },
+              { step: "3", title: "Share the Link", desc: "Send the link. It expires automatically." },
+            ].map((item) => (
+              <div key={item.step} className="space-y-2">
+                <div className="text-4xl font-black text-primary/20">{item.step}.</div>
+                <h3 className="text-base font-bold">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <SocialLinks />
+
+      <footer className="mt-10 mb-6 text-center text-[10px] text-muted-foreground/40 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link href="/help" className="hover:text-primary transition-colors">Help & FAQ</Link>
+          <Link href="/support" className="hover:text-primary transition-colors font-bold">Support Us</Link>
+          <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+        </div>
+        <div className="flex items-center justify-center">
+          <Link
+            href="https://www.linkedin.com/posts/sachinkumar014_viorashare-secure-temporary-file-sharing-activity-7442886400578084864-Mbf7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 hover:text-primary transition-all duration-300 py-1 px-3 rounded-full bg-muted/20 border border-muted-foreground/10"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            <span className="font-bold tracking-tight">Official Announcement</span>
+          </Link>
+        </div>
+        <p>© 2026 VioraShare by Sachin Kumar. All rights reserved.</p>
+      </footer>
     </main>
   );
 }
