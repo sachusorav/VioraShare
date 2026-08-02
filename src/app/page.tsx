@@ -110,7 +110,7 @@ export default function Home() {
         </div>
 
         {/* BOTTOM / RIGHT — the actual product */}
-        <div className="w-full max-w-[420px] flex-shrink-0 mx-auto lg:mx-0">
+        <div id="create-form" className="w-full max-w-[420px] flex-shrink-0 mx-auto lg:mx-0">
           <Suspense fallback={
             <div className="w-full h-64 bg-card/60 animate-pulse rounded-2xl border border-border/40" />
           }>
