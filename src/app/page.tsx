@@ -7,7 +7,7 @@ import Link from "next/link";
 import { HomeForms } from "@/components/home-forms";
 import { SocialLinks } from "@/components/social-links";
 import { ComparisonStrip } from "@/components/comparison-strip";
-import { ShieldCheck, Timer, Ghost, Zap, ArrowDown } from "lucide-react";
+import { ShieldCheck, Timer, Ghost, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "VioraShare - Send Files Without Login | Auto-Delete File Sharing",
@@ -57,17 +57,20 @@ export default function Home() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          ABOVE THE FOLD — hero + form, fills viewport
+          ABOVE THE FOLD
+          Mobile: compact stacked (hero → form, no gap)
+          Desktop: two-column, full viewport height
       ══════════════════════════════════════════════ */}
       <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8
-                          flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20
-                          min-h-[calc(100dvh-64px)] py-10 lg:py-0">
+                          flex flex-col lg:flex-row lg:items-center lg:justify-center
+                          gap-6 lg:gap-20
+                          pt-8 pb-6 lg:py-0 lg:min-h-[calc(100dvh-64px)]">
 
-        {/* LEFT — compact value prop */}
-        <div className="flex-1 flex flex-col gap-5 text-center lg:text-left max-w-xl">
+        {/* TOP / LEFT — compact value prop */}
+        <div className="flex-1 flex flex-col gap-4 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
 
           {/* Eyebrow pill */}
-          <div className="inline-flex items-center justify-center lg:justify-start">
+          <div className="flex justify-center lg:justify-start">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full
                              bg-primary/10 border border-primary/20
                              text-primary text-[11px] font-bold uppercase tracking-widest">
@@ -76,47 +79,40 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Headline — readable on every screen */}
-          <h1 className="font-heading font-bold tracking-tight leading-[1.1]
-                         text-[1.85rem] sm:text-4xl lg:text-[2.6rem]">
+          {/* Headline */}
+          <h1 className="font-heading font-bold tracking-tight leading-[1.12]
+                         text-[1.7rem] sm:text-[2.2rem] lg:text-[2.6rem]">
             Send files too private
-            <br />
-            for{" "}
-            <span className="text-foreground/50">WhatsApp.</span>
+            <br className="hidden sm:block" />
+            {" "}for{" "}
+            <span className="text-foreground/40">WhatsApp.</span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto lg:mx-0">
-            No login. No account. Files auto-delete after your chosen time —
-            {" "}<span className="text-foreground font-semibold">done in seconds.</span>
+          {/* Subheadline — shorter on mobile */}
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto lg:mx-0">
+            No login. Auto-delete. Done in seconds.
           </p>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          {/* Trust badges — 2×2 grid on mobile, row on desktop */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 justify-items-center sm:justify-center lg:justify-start max-w-xs sm:max-w-none mx-auto lg:mx-0">
             {trustBadges.map(({ icon: Icon, label }) => (
               <span
                 key={label}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 w-full sm:w-auto
                            rounded-full bg-card/60 border border-border/60
                            text-xs font-semibold text-muted-foreground backdrop-blur-sm"
               >
-                <Icon className="w-3.5 h-3.5 text-primary" />
+                <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
                 {label}
               </span>
             ))}
           </div>
-
-          {/* Scroll hint — only on mobile where form is below */}
-          <div className="flex items-center justify-center gap-2 text-muted-foreground/40 text-xs lg:hidden mt-1">
-            <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
-            Scroll to start sharing
-          </div>
         </div>
 
-        {/* RIGHT — the actual product (upload form) */}
-        <div className="w-full max-w-[420px] flex-shrink-0">
+        {/* BOTTOM / RIGHT — the actual product */}
+        <div className="w-full max-w-[420px] flex-shrink-0 mx-auto lg:mx-0">
           <Suspense fallback={
-            <div className="w-full h-72 bg-card/60 animate-pulse rounded-2xl border border-border/40" />
+            <div className="w-full h-64 bg-card/60 animate-pulse rounded-2xl border border-border/40" />
           }>
             <HomeForms />
           </Suspense>
