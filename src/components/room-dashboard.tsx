@@ -172,27 +172,20 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   return (
     <div {...getRootProps()} className={`flex flex-col gap-6 flex-1${isDragActive ? " ring-2 ring-primary ring-inset rounded-xl" : ""}`}>
       <input {...getInputProps()} />
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 p-0.5 rounded-full bg-gradient-to-tr from-primary to-blue-600 shadow-xl flex-shrink-0 ring-2 ring-background">
-            <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-              <Image 
-                src="/icon.png" 
-                alt="Viora" 
-                width={32} 
-                height={32} 
-                className="scale-90"
-              />
-            </div>
+      {/* Room Header */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+            <Image src="/icon.png" alt="Viora" width={20} height={20} />
           </div>
-          <div className="flex flex-col gap-0.5">
-            <h1 className="text-3xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Room {roomId}
+          <div>
+            <h1 className="text-xl font-heading font-bold tracking-tight leading-tight">
+              Room <span className="font-mono tracking-widest">{roomId}</span>
             </h1>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Room Active" />
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Live Session</span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest ${connected ? "text-green-500" : "text-orange-400 animate-pulse"}`}>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Live</span>
+              <span className={`text-[10px] font-semibold ${connected ? "text-green-500" : "text-orange-400 animate-pulse"}`}>
                 · {connected ? "Connected" : "Reconnecting..."}
               </span>
             </div>
@@ -201,43 +194,44 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
         <RoomCountdown expiresAt={expiresAt} />
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={copyRoomLink} className="bg-background/50 backdrop-blur">
-          <Copy className="w-4 h-4 mr-2" />
-          Copy Room Link
+      {/* Action bar */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button variant="outline" size="sm" onClick={copyRoomLink} className="bg-card/50 backdrop-blur h-9 text-sm gap-2">
+          <Copy className="w-3.5 h-3.5" />
+          Copy Link
         </Button>
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" className="bg-background/50 backdrop-blur">
-              <QrCode className="w-4 h-4 mr-2" />
-              Scan QR
+            <Button variant="outline" size="sm" className="bg-card/50 backdrop-blur h-9 text-sm gap-2">
+              <QrCode className="w-3.5 h-3.5" />
+              QR Code
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md flex flex-col items-center justify-center p-8">
+          <DialogContent className="sm:max-w-sm flex flex-col items-center p-8">
             <DialogHeader>
-              <DialogTitle className="text-center mb-4 text-xl font-heading">Room QR Code</DialogTitle>
+              <DialogTitle className="text-center text-lg font-heading">Scan to Join</DialogTitle>
             </DialogHeader>
-            <div className="bg-white p-4 rounded-xl shadow-sm">
-              <QRCodeSVG value={typeof window !== 'undefined' ? `${window.location.origin}/?join=${roomId}` : ""} size={200} />
+            <div className="bg-white p-4 rounded-2xl shadow-sm mt-2">
+              <QRCodeSVG value={typeof window !== 'undefined' ? `${window.location.origin}/?join=${roomId}` : ""} size={180} />
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-4">Scan this on a mobile device to instantly join room {roomId}.</p>
+            <p className="text-center text-xs text-muted-foreground mt-3">Scan on any device to join room <span className="font-mono font-bold">{roomId}</span>.</p>
           </DialogContent>
         </Dialog>
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="bg-muted/50 backdrop-blur mb-6">
-          <TabsTrigger value="files">
-            <File className="w-4 h-4 mr-2" />
+        <TabsList className="bg-card/50 backdrop-blur border border-border/40 mb-4 h-10 p-1">
+          <TabsTrigger value="files" className="gap-1.5 text-sm h-8">
+            <File className="w-3.5 h-3.5" />
             Files
           </TabsTrigger>
-          <TabsTrigger value="clipboard">
-            <StickyNote className="w-4 h-4 mr-2" />
-            Shared Clipboard
+          <TabsTrigger value="clipboard" className="gap-1.5 text-sm h-8">
+            <StickyNote className="w-3.5 h-3.5" />
+            Clipboard
           </TabsTrigger>
-          <TabsTrigger value="chat">
-            <User className="w-4 h-4 mr-2" />
-            Team Chat
+          <TabsTrigger value="chat" className="gap-1.5 text-sm h-8">
+            <User className="w-3.5 h-3.5" />
+            Chat
           </TabsTrigger>
         </TabsList>
 
@@ -248,37 +242,43 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             transition={{ duration: 0.4 }}
             className="space-y-6"
           >
-            <div className="flex flex-col gap-4">
-              <Card 
+            <div className="flex flex-col gap-3">
+              {/* Drop zone */}
+              <Card
                 onClick={openFilePicker}
-                className={`border-dashed border-2 cursor-pointer transition-colors bg-card/40 backdrop-blur shadow-none h-48 flex flex-col items-center justify-center ${isDragActive ? "border-primary bg-primary/5" : "border-border/60 hover:border-primary/50 hover:bg-muted/20"}`}
+                className={`border-2 border-dashed cursor-pointer transition-all bg-card/30 backdrop-blur shadow-none
+                  h-36 flex flex-col items-center justify-center rounded-2xl
+                  ${isDragActive ? "border-primary bg-primary/5 scale-[1.01]" : "border-border/50 hover:border-primary/40 hover:bg-muted/10"}`}
               >
-                <CardContent className="flex flex-col items-center justify-center pt-6 text-center">
-                  <UploadCloud className={`w-12 h-12 mb-4 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                  <h3 className="font-semibold text-lg mb-1">
-                    {isDragActive ? "Drop files here" : "Drag & drop files here"}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    or click to select files to securely share
-                  </p>
+                <CardContent className="flex flex-col items-center justify-center pt-4 text-center gap-2">
+                  <UploadCloud className={`w-9 h-9 ${isDragActive ? 'text-primary' : 'text-muted-foreground/60'}`} />
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {isDragActive ? "Drop to upload" : "Drag & drop or click to upload"}
+                    </p>
+                    <p className="text-xs text-muted-foreground/60 mt-0.5">
+                      Any file type supported
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
-              <div className="flex items-center space-x-2 px-1">
-                <Switch 
-                  id="self-destruct" 
-                  checked={selfDestruct} 
-                  onCheckedChange={setSelfDestruct} 
+              {/* Self-destruct toggle */}
+              <div className="flex items-center gap-2.5 px-1">
+                <Switch
+                  id="self-destruct"
+                  checked={selfDestruct}
+                  onCheckedChange={setSelfDestruct}
                 />
-                <Label htmlFor="self-destruct" className="text-sm font-medium cursor-pointer">
-                  Auto-Self-Destruct (Delete after 1 download)
+                <Label htmlFor="self-destruct" className="text-xs font-medium cursor-pointer text-muted-foreground">
+                  💥 Self-destruct after 1 download
                 </Label>
               </div>
             </div>
 
-            <div className="mt-8 flex-1">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-heading font-semibold">Room Files ({liveFiles.length})</h3>
+            <div className="mt-4 flex-1">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Files ({liveFiles.length})</h3>
                 {liveFiles.length > 0 && (
                   <Button 
                     variant="ghost" 

@@ -34,22 +34,17 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
-      {/* Background gradients */}
-      <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] -z-10 pointer-events-none" />
-      
-      <main className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 pt-8 md:pt-12 relative z-10 flex flex-col h-full">
+      {/* Ambient background */}
+      <div className="fixed top-0 left-0 w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px] -z-10 pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[50%] h-[50%] rounded-full bg-blue-500/8 blur-[140px] -z-10 pointer-events-none" />
+
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
         <RoomDashboard initialFiles={room.files} roomId={room.id} expiresAt={room.expiresAt.toISOString()} />
-        
-        <footer className="mt-auto py-12 flex flex-col items-center gap-4">
-          <div className="flex items-center justify-center gap-6 text-[10px] text-muted-foreground/30 uppercase tracking-[0.2em] font-medium">
-            <Link href="/help" className="hover:text-primary transition-colors">Help</Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
-          </div>
-          <p className="text-[10px] text-muted-foreground/20 uppercase tracking-[0.3em]">
-            VioraShield™ Protected Environment
-          </p>
+
+        <footer className="mt-4 py-6 flex items-center justify-center gap-5 border-t border-border/20">
+          <Link href="/help" className="text-[11px] text-muted-foreground/40 hover:text-primary transition-colors">Help</Link>
+          <Link href="/privacy" className="text-[11px] text-muted-foreground/40 hover:text-primary transition-colors">Privacy</Link>
+          <Link href="/terms" className="text-[11px] text-muted-foreground/40 hover:text-primary transition-colors">Terms</Link>
         </footer>
       </main>
     </div>
