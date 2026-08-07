@@ -6,7 +6,7 @@ import { useRoomStream } from "@/hooks/useRoomStream";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Copy, UploadCloud, File, Download, SearchIcon, ImageIcon, FileTextIcon, ArchiveIcon, QrCode, StickyNote, User } from "lucide-react";
+import { Copy, UploadCloud, File, Download, Upload, ImageIcon, FileTextIcon, ArchiveIcon, QrCode, StickyNote, User, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { File as PrismaFile } from "@prisma/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -123,10 +123,11 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({ onDrop, noClick: true });
 
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith("image/")) return <ImageIcon className="w-8 h-8 text-blue-500" />;
-    if (mimeType.includes("pdf") || mimeType.includes("document")) return <FileTextIcon className="w-8 h-8 text-orange-500" />;
-    if (mimeType.includes("zip") || mimeType.includes("compressed")) return <ArchiveIcon className="w-8 h-8 text-purple-500" />;
-    return <File className="w-8 h-8 text-muted-foreground" />;
+    // Single accent: teal/primary for all file types — no rainbow
+    if (mimeType.startsWith("image/")) return <ImageIcon className="w-5 h-5 text-primary" strokeWidth={1.75} />;
+    if (mimeType.includes("pdf") || mimeType.includes("document")) return <FileTextIcon className="w-5 h-5 text-primary" strokeWidth={1.75} />;
+    if (mimeType.includes("zip") || mimeType.includes("compressed")) return <ArchiveIcon className="w-5 h-5 text-primary" strokeWidth={1.75} />;
+    return <File className="w-5 h-5 text-muted-foreground" strokeWidth={1.75} />;
   };
 
   const copyRoomLink = () => {
@@ -312,9 +313,21 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
               )}
 
               {liveFiles.length === 0 && Object.keys(uploadProgress).length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
-                  <SearchIcon className="w-8 h-8 mb-2 opacity-50" />
-                  <p>No files uploaded yet.</p>
+                <div className="flex flex-col items-center justify-center gap-3 py-12
+                               border border-dashed border-border/40 rounded-2xl text-center">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 border border-primary/15 flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-primary" strokeWidth={1.75} />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="type-h2 text-foreground/70">No files yet</p>
+                    <p className="type-caption text-muted-foreground/60 max-w-[200px]">
+                      Drag & drop above or click to upload. Files auto-delete when this room expires.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 type-caption text-muted-foreground/40">
+                    <Clock className="w-3 h-3" strokeWidth={1.75} />
+                    Room is live and encrypted
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
