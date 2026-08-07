@@ -150,29 +150,29 @@ export function HomeForms() {
       </Suspense>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
-          <TabsTrigger value="create" className="text-sm py-2.5 gap-2">
+        <TabsList className="w-full grid grid-cols-2 mb-3 h-11">
+          <TabsTrigger value="create" className="text-sm gap-2 font-semibold">
             <UploadCloud className="w-4 h-4" /> Create Room
           </TabsTrigger>
-          <TabsTrigger value="join" className="text-sm py-2.5 gap-2">
+          <TabsTrigger value="join" className="text-sm gap-2 font-semibold">
             <DownloadCloud className="w-4 h-4" /> Join Room
           </TabsTrigger>
         </TabsList>
 
         {/* ── CREATE ROOM ── */}
-        <TabsContent value="create">
-          <Card className="border-border/50 shadow-xl bg-card/60 backdrop-blur-xl">
-            <form onSubmit={handleCreateRoom}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl font-heading">New Room</CardTitle>
-                <CardDescription className="text-xs">
+        <TabsContent value="create" className="w-full mt-0">
+          <div className="w-full rounded-2xl border border-border/50 bg-card overflow-hidden shadow-xl">
+            <form onSubmit={handleCreateRoom} className="w-full">
+              <div className="p-5 pb-4 space-y-0.5">
+                <h2 className="text-base font-semibold">New Room</h2>
+                <p className="text-xs text-muted-foreground">
                   Create a secure, temporary space to share files.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 pb-4">
+                </p>
+              </div>
+              <div className="px-5 pb-4 space-y-4">
                 {/* Passcode */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="passcode" className="flex items-center gap-1.5 text-xs">
+                  <Label htmlFor="passcode" className="flex items-center gap-1.5 text-xs font-semibold">
                     <Lock className="w-3 h-3" /> Passcode
                   </Label>
                   <div className="relative">
@@ -182,7 +182,7 @@ export function HomeForms() {
                       placeholder="Set a passcode for this room"
                       value={createPasscode}
                       onChange={(e) => setCreatePasscode(e.target.value)}
-                      className="bg-background/50 pr-10"
+                      className="bg-background/60 pr-10 h-10"
                       autoComplete="new-password"
                       required
                     />
@@ -199,9 +199,9 @@ export function HomeForms() {
 
                 {/* Expiry */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Expiration</Label>
+                  <Label className="text-xs font-semibold">Expiration</Label>
                   <Select value={expiresIn} onValueChange={(val) => { if (val) setExpiresIn(val); }}>
-                    <SelectTrigger className="bg-background/50">
+                    <SelectTrigger className="bg-background/60 h-10">
                       <SelectValue placeholder="Select expiration time" />
                     </SelectTrigger>
                     <SelectContent>
@@ -211,30 +211,29 @@ export function HomeForms() {
                     </SelectContent>
                   </Select>
                 </div>
-              </CardContent>
-              <CardFooter className="pt-0 pb-4">
-                <Button type="submit" className="w-full font-semibold gap-2" disabled={isCreating}>
+              </div>
+              <div className="px-5 pb-5">
+                <Button type="submit" className="w-full h-11 font-bold gap-2" disabled={isCreating}>
                   {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
                   {isCreating ? "Creating Room..." : "Create Room"}
                 </Button>
-              </CardFooter>
+              </div>
             </form>
-          </Card>
+          </div>
         </TabsContent>
 
         {/* ── JOIN ROOM ── */}
-        <TabsContent value="join">
-          <Card className="border-border/50 shadow-xl bg-card/60 backdrop-blur-xl">
-            <form onSubmit={handleJoinRoom}>
-              <CardHeader className="pb-3">
+        <TabsContent value="join" className="w-full mt-0">
+          <div className="w-full rounded-2xl border border-border/50 bg-card overflow-hidden shadow-xl">
+            <form onSubmit={handleJoinRoom} className="w-full">
+              <div className="p-5 pb-4">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-heading">Join Room</CardTitle>
-                    <CardDescription className="text-xs mt-1">
+                  <div className="space-y-0.5">
+                    <h2 className="text-base font-semibold">Join Room</h2>
+                    <p className="text-xs text-muted-foreground">
                       Enter the Room ID and passcode to access files.
-                    </CardDescription>
+                    </p>
                   </div>
-                  {/* Back to Create — always visible, very clear */}
                   <button
                     type="button"
                     onClick={() => handleTabChange("create")}
@@ -243,11 +242,11 @@ export function HomeForms() {
                     <X className="w-3 h-3" /> Create instead
                   </button>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-3 pb-4">
-                {/* Room ID with clear button */}
+              </div>
+              <div className="px-5 pb-4 space-y-4">
+                {/* Room ID */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="roomId" className="flex items-center gap-1.5 text-xs">
+                  <Label htmlFor="roomId" className="flex items-center gap-1.5 text-xs font-semibold">
                     <KeyRound className="w-3 h-3" /> Room ID
                   </Label>
                   <div className="relative">
@@ -256,7 +255,7 @@ export function HomeForms() {
                       placeholder="e.g. A1B2C3"
                       value={joinRoomId}
                       onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
-                      className="bg-background/50 uppercase tracking-widest font-mono pr-10"
+                      className="bg-background/60 uppercase tracking-widest font-mono pr-10 h-10"
                       autoComplete="off"
                       maxLength={6}
                       required
@@ -275,9 +274,9 @@ export function HomeForms() {
                   </div>
                 </div>
 
-                {/* Passcode with show/hide */}
+                {/* Passcode */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="joinPasscode" className="flex items-center gap-1.5 text-xs">
+                  <Label htmlFor="joinPasscode" className="flex items-center gap-1.5 text-xs font-semibold">
                     <Lock className="w-3 h-3" /> Passcode
                   </Label>
                   <div className="relative">
@@ -287,7 +286,7 @@ export function HomeForms() {
                       placeholder="Enter room passcode"
                       value={joinPasscode}
                       onChange={(e) => setJoinPasscode(e.target.value)}
-                      className="bg-background/50 pr-10"
+                      className="bg-background/60 pr-10 h-10"
                       autoComplete="current-password"
                       required
                     />
@@ -301,20 +300,20 @@ export function HomeForms() {
                     </button>
                   </div>
                 </div>
-              </CardContent>
-              <CardFooter className="pt-0 pb-4">
+              </div>
+              <div className="px-5 pb-5">
                 <Button
                   type="submit"
-                  className="w-full font-semibold gap-2"
+                  className="w-full h-11 font-bold gap-2"
                   variant="secondary"
                   disabled={isJoining}
                 >
                   {isJoining ? <Loader2 className="w-4 h-4 animate-spin" /> : <DownloadCloud className="w-4 h-4" />}
                   {isJoining ? "Joining..." : "Access Files"}
                 </Button>
-              </CardFooter>
+              </div>
             </form>
-          </Card>
+          </div>
         </TabsContent>
 
         {/* ── RECENT ROOMS ── */}
