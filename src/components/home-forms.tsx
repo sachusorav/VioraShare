@@ -96,20 +96,34 @@ export function HomeForms() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let tempId = "";
     for (let i = 0; i < 6; i++) tempId += chars.charAt(Math.floor(Math.random() * chars.length));
-    router.push(`/room/${tempId}`);
+
     try {
-      const res = await fetch("/api/rooms", {
+      // Step 1: Create the room
+      const createRes = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ passcode: createPasscode, expiresIn: parseInt(expiresIn), roomId: tempId }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create room");
-      saveRecentRoom(data.roomId);
+      const createData = await createRes.json();
+      if (!createRes.ok) throw new Error(createData.error || "Failed to create room");
+
+      const roomId = createData.roomId ?? tempId;
+
+      // Step 2: Silently join with the same passcode — this sets the access cookie
+      // so the creator goes straight into the room without re-entering their password.
+      const joinRes = await fetch(`/api/rooms/${roomId}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: createPasscode }),
+      });
+      if (!joinRes.ok) throw new Error("Created room but failed to authenticate. Please join manually.");
+
+      saveRecentRoom(roomId);
+      // Step 3: Now the cookie is set — redirect directly into the room
+      router.push(`/room/${roomId}`);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "Something went wrong";
       toast.error(msg);
-      router.push("/");
     } finally {
       setIsCreating(false);
     }
