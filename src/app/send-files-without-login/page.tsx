@@ -3,18 +3,25 @@ import Link from "next/link";
 import { ArrowRight, UserX, Lock, Zap, Shield, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Send Files Without Login | Anonymous File Sharing Free — VioraShare",
-  description: "Send files without login or creating an account. VioraShare lets you share files anonymously in seconds. No email, no sign-up, no trace. 100% free.",
+  title: "Send Files Without Login — Free Anonymous File Sharing | VioraShare",
+  description:
+    "Send files without login or creating an account. VioraShare lets you share files anonymously in seconds. No email, no sign-up, no trace. 100% free — files auto-delete when done.",
   keywords: [
     "send files without login", "file sharing no account", "anonymous file transfer",
     "share files without sign up", "send files without email", "no registration file sharing",
-    "anonymous file upload", "share files no account", "file transfer without account"
+    "anonymous file upload", "share files no account", "file transfer without account",
   ],
   alternates: { canonical: "https://www.viorashare.online/send-files-without-login" },
   openGraph: {
-    title: "Send Files Without Login — VioraShare",
-    description: "No email. No account. No trace. Share files anonymously in 10 seconds.",
+    title: "Send Files Without Login — Free Anonymous File Sharing | VioraShare",
+    description: "No email. No account. No trace. Share files anonymously in 10 seconds. 100% free.",
     url: "https://www.viorashare.online/send-files-without-login",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "VioraShare — Send Files Without Login" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Send Files Without Login — VioraShare",
+    images: ["/og-image.png"],
   },
 };
 
@@ -149,8 +156,15 @@ export default function SendFilesWithoutLoginPage() {
           </div>
         </section>
 
-        <footer className="text-center pb-12 text-zinc-700 text-xs">
-          © 2026 VioraShare · <Link href="/privacy" className="hover:text-zinc-500 transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-zinc-500 transition-colors">Terms</Link>
+        <footer className="text-center py-10 border-t border-white/5 text-zinc-700 text-xs space-y-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/" className="hover:text-zinc-400 transition-colors">← Back to VioraShare</Link>
+            <Link href="/temporary-file-sharing" className="hover:text-zinc-400 transition-colors">Temporary File Sharing</Link>
+            <Link href="/secure-file-sharing" className="hover:text-zinc-400 transition-colors">Secure File Sharing</Link>
+            <Link href="/help" className="hover:text-zinc-400 transition-colors">Help & FAQ</Link>
+            <Link href="/privacy" className="hover:text-zinc-400 transition-colors">Privacy</Link>
+          </div>
+          <p>© 2026 VioraShare · Anonymous file sharing, no login required.</p>
         </footer>
       </main>
     </>

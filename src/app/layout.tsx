@@ -3,79 +3,95 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
+  display: "swap",
 });
 
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+const BASE_URL = "https://www.viorashare.online";
 
 export const metadata: Metadata = {
-  title: "VioraShare - Free Secure File Sharing | No Login Required",
-  description: "Send files instantly with no login, no sign-up, and no trace. Create a secure temporary room, share files across devices, and everything self-destructs when done. Free WeTransfer alternative.",
+  metadataBase: new URL(BASE_URL),
+
+  title: {
+    default: "VioraShare — Free Temporary File Sharing, No Login Required",
+    template: "%s | VioraShare",
+  },
+  description:
+    "Share files instantly with no login, no sign-up, and no account. VioraShare creates temporary, password-protected rooms that auto-delete after 15 minutes, 1 hour, or 24 hours. Free anonymous file sharing.",
+
   keywords: [
-    // Core keywords
-    "file sharing", "secure file sharing", "free file sharing",
-    "temporary file sharing", "anonymous file sharing",
-    // US/UK high-value keywords
-    "send files without login", "no sign up file sharing",
-    "WeTransfer alternative", "send large files free",
-    "secure file transfer", "encrypted file sharing",
-    "private file sharing", "disposable file sharing",
-    // India market keywords
-    "free file sharing india", "send files without account",
-    "file sharing without registration", "free file transfer online",
-    // Long-tail high-conversion
-    "self destructing file share", "temporary file storage",
-    "share files between devices", "no login file transfer",
-    "anonymous file upload", "secure room file sharing",
-    "viorashare"
+    "temporary file sharing",
+    "file sharing without login",
+    "share files without password",
+    "free file sharing no signup",
+    "temporary image sharing",
+    "quick file share",
+    "anonymous file sharing",
+    "no login file transfer",
+    "send files without account",
+    "self destructing file share",
+    "disposable file sharing",
+    "secure file transfer free",
+    "WeTransfer alternative free",
+    "share files between devices",
+    "file sharing no registration",
+    "viorashare",
   ],
+
   authors: [{ name: "Sachin Kumar", url: "https://www.linkedin.com/in/sachinkumar014" }],
-  creator: "VioraShare",
+  creator: "Sachin Kumar",
   publisher: "VioraShare",
   category: "Technology",
-  classification: "File Sharing / Privacy Tools",
+
+  alternates: {
+    canonical: BASE_URL,
+  },
+
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://www.viorashare.online"),
-  alternates: {
-    canonical: "/",
-  },
+
   openGraph: {
-    title: "VioraShare - Free Secure File Sharing | No Login Required",
-    description: "Send files instantly with no login, no sign-up, and no trace. Create a secure temporary room, share files across devices, and everything self-destructs when done.",
-    url: "https://www.viorashare.online",
+    title: "VioraShare — Free Temporary File Sharing, No Login Required",
+    description:
+      "Share files instantly. No login, no sign-up. Files auto-delete after 15 min, 1 hour, or 24 hours. Free anonymous file sharing with passcode-protected rooms.",
+    url: BASE_URL,
     siteName: "VioraShare",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VioraShare - Free Secure Temporary File Sharing",
+        alt: "VioraShare — Share Files Without Login. Auto-delete. Free.",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "VioraShare - Free Secure File Sharing | No Login Required",
-    description: "Send files instantly with no login, no sign-up, and no trace. Free WeTransfer alternative with self-destructing rooms.",
+    title: "VioraShare — Free Temporary File Sharing, No Login Required",
+    description:
+      "No login. No sign-up. Files auto-delete. Share files anonymously in seconds — free forever.",
     images: ["/og-image.png"],
     creator: "@viorashare",
   },
+
   robots: {
     index: true,
     follow: true,
@@ -87,6 +103,13 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+
+  // Google Search Console & Bing Webmaster verification
+  // Replace the placeholder values with your actual verification codes
+  verification: {
+    google: "REPLACE_WITH_GOOGLE_SEARCH_CONSOLE_CODE",
+    // bing: "REPLACE_WITH_BING_WEBMASTER_CODE",
+  },
 };
 
 export default function RootLayout({
@@ -94,71 +117,67 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "VioraShare",
-      "operatingSystem": "Web",
-      "applicationCategory": "ProductivityApplication",
-      "applicationSubCategory": "File Sharing",
-      "description": "Free secure temporary file sharing. No login required. Create disposable rooms, share files across devices, everything self-destructs when done.",
-      "url": "https://www.viorashare.online",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "1250"
-      },
-      "review": [
-        {
-          "@type": "Review",
-          "author": { "@type": "Person", "name": "Alex R." },
-          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
-          "reviewBody": "Finally a file sharing site that doesn't ask for my email. Super fast and clean UI!"
-        },
-        {
-          "@type": "Review",
-          "author": { "@type": "Person", "name": "Sarah M." },
-          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
-          "reviewBody": "The temporary rooms are a game changer for simple file drops between my laptop and phone."
-        }
+  /**
+   * SoftwareApplication JSON-LD — single source of truth in layout.
+   * NOTE: aggregateRating removed — it requires real, verifiable reviews.
+   * Fabricated ratings are against Google's guidelines and risk manual penalties.
+   */
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "VioraShare",
+    operatingSystem: "Web",
+    applicationCategory: "UtilitiesApplication",
+    applicationSubCategory: "File Sharing",
+    description:
+      "Free temporary file sharing with no login required. Create passcode-protected rooms that auto-delete after 15 minutes, 1 hour, or 24 hours. Anonymous, private, and instant.",
+    url: BASE_URL,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "No login required",
+      "Anonymous file sharing",
+      "Self-destructing rooms",
+      "Passcode protection",
+      "QR code sharing",
+      "Shared clipboard",
+      "Flexible file expiry (15 min, 1 hour, 24 hours)",
+      "Per-file self-destruct mode",
+      "Zero tracking or personal data stored",
+    ],
+    author: {
+      "@type": "Person",
+      name: "Sachin Kumar",
+      url: "https://www.linkedin.com/in/sachinkumar014",
+      sameAs: [
+        "https://www.linkedin.com/in/sachinkumar014",
+        "https://github.com/sachusorav",
       ],
-      "featureList": [
-        "No login required",
-        "Self-destructing rooms",
-        "Passcode protection",
-        "QR code sharing",
-        "Shared clipboard",
-        "File expiry control"
-      ],
-      "author": {
-        "@type": "Person",
-        "name": "Sachin Kumar",
-        "url": "https://www.linkedin.com/in/sachinkumar014",
-        "sameAs": [
-          "https://www.linkedin.com/in/sachinkumar014",
-          "https://github.com/sachusorav"
-        ]
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "VioraShare",
+      url: BASE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/icon.png`,
+        width: 512,
+        height: 512,
       },
-      "publisher": {
-        "@type": "Organization",
-        "name": "VioraShare",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://www.viorashare.online/icon.png"
-        }
-      }
-    }
-  ];
+    },
+  };
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Explicit favicon tags */}
+        <link rel="icon" href="/icon.png" type="image/png" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+
+        {/* JSON-LD structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

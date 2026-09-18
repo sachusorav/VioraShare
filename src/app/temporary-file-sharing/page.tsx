@@ -3,18 +3,25 @@ import Link from "next/link";
 import { ArrowRight, Clock, Trash2, Zap, Shield, Timer } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Temporary File Sharing | Self-Destructing File Transfer Free — VioraShare",
-  description: "Share files temporarily with automatic expiry. VioraShare creates self-destructing rooms that delete all files after 15 minutes, 1 hour, or 24 hours. Free, no login.",
+  title: "Temporary File Sharing — Files That Auto-Delete | VioraShare",
+  description:
+    "Share files temporarily with automatic expiry. Create a self-destructing room — files permanently delete after 15 minutes, 1 hour, or 24 hours. No login required, completely free.",
   keywords: [
     "temporary file sharing", "self destructing file share", "disposable file transfer",
     "file sharing with expiry", "auto delete file sharing", "timed file sharing",
-    "temporary file upload", "expiring file links", "files that delete themselves"
+    "temporary file upload", "expiring file links", "files that delete themselves",
   ],
   alternates: { canonical: "https://www.viorashare.online/temporary-file-sharing" },
   openGraph: {
     title: "Temporary File Sharing That Auto-Deletes — VioraShare",
-    description: "Create self-destructing file rooms. Files vanish automatically when time's up.",
+    description: "Create self-destructing file rooms. Files vanish automatically after 15 min, 1 hour, or 24 hours. Free, no login.",
     url: "https://www.viorashare.online/temporary-file-sharing",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "VioraShare Temporary File Sharing" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Temporary File Sharing That Auto-Deletes — VioraShare",
+    images: ["/og-image.png"],
   },
 };
 
@@ -143,8 +150,15 @@ export default function TemporaryFileSharingPage() {
           </div>
         </section>
 
-        <footer className="text-center pb-12 text-zinc-700 text-xs">
-          © 2026 VioraShare · <Link href="/privacy" className="hover:text-zinc-500 transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-zinc-500 transition-colors">Terms</Link>
+        <footer className="text-center py-10 border-t border-white/5 text-zinc-700 text-xs space-y-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/" className="hover:text-zinc-400 transition-colors">← Back to VioraShare</Link>
+            <Link href="/send-files-without-login" className="hover:text-zinc-400 transition-colors">Send Files Without Login</Link>
+            <Link href="/secure-file-sharing" className="hover:text-zinc-400 transition-colors">Secure File Sharing</Link>
+            <Link href="/help" className="hover:text-zinc-400 transition-colors">Help & FAQ</Link>
+            <Link href="/privacy" className="hover:text-zinc-400 transition-colors">Privacy</Link>
+          </div>
+          <p>© 2026 VioraShare · Free temporary file sharing, no login required.</p>
         </footer>
       </main>
     </>
