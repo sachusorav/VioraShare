@@ -29,7 +29,7 @@ const comparison = [
 
 export default function FilebinAlternativePage() {
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-emerald-500/20 selection:text-emerald-300">
+    <main className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
       {/* Hero */}
       <section className="relative overflow-hidden px-6 pt-24 pb-20 text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent -z-10" />

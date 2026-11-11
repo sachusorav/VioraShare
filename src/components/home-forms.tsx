@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,8 +66,8 @@ export function HomeForms() {
   const [expiresIn, setExpiresIn] = useState("60");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [createdRoom, setCreatedRoom] = useState<{ roomId: string; passcode: string } | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const joinPasscodeRef = useRef<HTMLInputElement>(null);
 
   const expiryLabels: Record<string, string> = {
     "15": "15 minutes",
@@ -142,22 +142,17 @@ export function HomeForms() {
       if (!createRes.ok) throw new Error(createData.error || "Failed to create room");
 
       const roomId = createData.roomId ?? tempId;
-
-      // Step 2: Silently join with the same passcode — this sets the access cookie
-      // so the creator goes straight into the room without re-entering their password.
-      const joinRes = await fetch(`/api/rooms/${roomId}/join`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passcode: createPasscode }),
-      });
-      if (!joinRes.ok) throw new Error("Created room but failed to authenticate. Please join manually.");
-
-      try {
-        sessionStorage.setItem(`viora_room_pass_${roomId}`, createPasscode);
-      } catch {}
-
       saveRecentRoom(roomId);
-      setCreatedRoom({ roomId, passcode: createPasscode });
+
+      // Automatically switch to Join Room tab with Room ID filled in and passcode focused
+      setJoinRoomId(roomId);
+      setJoinPasscode("");
+      setCreatePasscode("");
+      setActiveTab("join");
+      toast.success("Room created! Enter passcode to join.");
+      setTimeout(() => {
+        joinPasscodeRef.current?.focus();
+      }, 50);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "Something went wrong";
       setCreateError(msg);
@@ -218,114 +213,10 @@ export function HomeForms() {
         {/* ── CREATE ROOM ── */}
         <TabsContent value="create" className="w-full mt-0">
           <div className="w-full rounded-[12px] border border-border bg-card overflow-hidden shadow-xl">
-            {createdRoom ? (
-              <div className="p-6 space-y-6">
-                <div className="text-center space-y-1">
-                  <p className="text-[13px] font-medium text-muted-foreground">Room Created</p>
-                  <div className="text-3xl sm:text-4xl font-mono font-bold tracking-widest text-foreground py-2">
-                    {createdRoom.roomId}
-                  </div>
-                  <p className="text-[13px] text-muted-foreground">
-                    Passcode: <span className="font-mono font-semibold text-foreground">{createdRoom.passcode}</span>
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  {/* Copy Room ID */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleCopy("roomId", createdRoom.roomId)}
-                    className="w-full justify-between h-11 min-h-[44px] px-3 text-[13px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                  >
-                    <span className="text-muted-foreground">Room ID</span>
-                    <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                      {copiedKey === "roomId" ? (
-                        <>
-                          <Check className="w-4 h-4 text-success" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" /> Copy Room ID
-                        </>
-                      )}
-                    </span>
-                  </Button>
-
-                  {/* Copy Passcode */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleCopy("passcode", createdRoom.passcode)}
-                    className="w-full justify-between h-11 min-h-[44px] px-3 text-[13px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                  >
-                    <span className="text-muted-foreground">Passcode</span>
-                    <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                      {copiedKey === "passcode" ? (
-                        <>
-                          <Check className="w-4 h-4 text-success" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" /> Copy Passcode
-                        </>
-                      )}
-                    </span>
-                  </Button>
-
-                  {/* Copy Combined Share Text */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                      handleCopy(
-                        "combined",
-                        `Room ID: ${createdRoom.roomId}\nPasscode: ${createdRoom.passcode}\nJoin: ${typeof window !== "undefined" ? window.location.origin : ""}/?join=${createdRoom.roomId}`
-                      )
-                    }
-                    className="w-full justify-between h-11 min-h-[44px] px-3 text-[13px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                  >
-                    <span className="text-muted-foreground">Share details</span>
-                    <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                      {copiedKey === "combined" ? (
-                        <>
-                          <Check className="w-4 h-4 text-success" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" /> Copy Share Text
-                        </>
-                      )}
-                    </span>
-                  </Button>
-                </div>
-
-                <div className="pt-2 space-y-2">
-                  <Button
-                    type="button"
-                    onClick={() => router.push(`/room/${createdRoom.roomId}`)}
-                    className="w-full h-11 min-h-[44px] font-semibold rounded-[8px] bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                  >
-                    Open Room
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => {
-                      setCreatedRoom(null);
-                      setCreatePasscode("");
-                    }}
-                    className="w-full min-h-[44px] text-xs text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                  >
-                    Create another room
-                  </Button>
-                </div>
+            <form onSubmit={handleCreateRoom} className="w-full">
+              <div className="p-5 pb-4 space-y-0.5">
+                <h2 className="text-[22px] font-bold text-foreground">Create Room</h2>
               </div>
-            ) : (
-              <form onSubmit={handleCreateRoom} className="w-full">
-                <div className="p-5 pb-4 space-y-0.5">
-                  <h2 className="text-[22px] font-bold text-foreground">Create Room</h2>
-                </div>
                 <div className="px-5 pb-4 space-y-4">
                   {createError && (
                     <div
@@ -403,7 +294,6 @@ export function HomeForms() {
                   </p>
                 </div>
               </form>
-            )}
           </div>
         </TabsContent>
 
@@ -451,20 +341,42 @@ export function HomeForms() {
                         setJoinRoomId(e.target.value.toUpperCase());
                         if (joinError) setJoinError(null);
                       }}
-                      className="uppercase tracking-widest font-mono pr-12 h-11 min-h-[44px] text-[16px]"
+                      className="uppercase tracking-widest font-mono pr-24 h-11 min-h-[44px] text-[16px]"
                       autoComplete="off"
                       maxLength={6}
                       required
                     />
                     {joinRoomId && (
-                      <button
-                        type="button"
-                        onClick={() => setJoinRoomId("")}
-                        className="w-11 h-11 flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                        aria-label="Clear Room ID"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleCopy("roomId", joinRoomId)}
+                          className="h-9 px-2 flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                          aria-label="Copy Room ID"
+                          title="Copy Room ID"
+                        >
+                          {copiedKey === "roomId" ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-success" />
+                              <span className="text-[11px] text-success font-medium">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-accent" />
+                              <span className="text-[11px] font-medium">Copy</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setJoinRoomId("")}
+                          className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                          aria-label="Clear Room ID"
+                          title="Clear Room ID"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -476,6 +388,7 @@ export function HomeForms() {
                   </Label>
                   <div className="relative">
                     <Input
+                      ref={joinPasscodeRef}
                       id="joinPasscode"
                       type={showJoinPass ? "text" : "password"}
                       placeholder="Enter passcode"

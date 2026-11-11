@@ -67,7 +67,7 @@ export default function HelpContent() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-24 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-24 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

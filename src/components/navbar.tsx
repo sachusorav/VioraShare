@@ -52,8 +52,10 @@ export function Navbar() {
     }
   };
 
-  const toggleTheme = () =>
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  const isDark = resolvedTheme === "dark";
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
 
   return (
     <header
@@ -120,19 +122,23 @@ export function Navbar() {
           {/* ── Right side ── */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
             {/* Theme toggle */}
-            {mounted && (
+            {mounted ? (
               <button
+                type="button"
                 onClick={toggleTheme}
-                title="Toggle theme"
-                className="w-8 h-8 flex items-center justify-center rounded-xl
-                           text-muted-foreground/70 hover:text-foreground hover:bg-foreground/6
-                           transition-all duration-150"
+                aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+                className="w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[8px]
+                           text-muted-foreground hover:text-foreground hover:bg-card
+                           transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
               >
-                {resolvedTheme === "dark"
-                  ? <Sun className="w-[15px] h-[15px]" />
-                  : <Moon className="w-[15px] h-[15px]" />
-                }
+                {isDark ? (
+                  <Sun className="w-4 h-4 text-accent" />
+                ) : (
+                  <Moon className="w-4 h-4 text-accent" />
+                )}
               </button>
+            ) : (
+              <div className="w-11 h-11 min-h-[44px] min-w-[44px]" aria-hidden="true" />
             )}
 
             <div className="w-px h-4 bg-border/60 mx-1" />
@@ -144,7 +150,7 @@ export function Navbar() {
                          bg-primary text-primary-foreground
                          hover:bg-primary/90 active:scale-[0.98]
                          transition-all duration-150 shadow-sm
-                         whitespace-nowrap"
+                         whitespace-nowrap min-h-[44px]"
             >
               <Zap className="w-4 h-4 text-primary-foreground" />
               Start Sharing
@@ -153,24 +159,30 @@ export function Navbar() {
 
           {/* ── Mobile: theme + burger ── */}
           <div className="md:hidden flex items-center gap-1 shrink-0">
-            {mounted && (
+            {mounted ? (
               <button
+                type="button"
                 onClick={toggleTheme}
-                className="w-8 h-8 flex items-center justify-center rounded-xl
-                           text-muted-foreground hover:text-foreground hover:bg-foreground/6
-                           transition-colors"
+                aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+                className="w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[8px]
+                           text-muted-foreground hover:text-foreground hover:bg-card
+                           transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
               >
-                {resolvedTheme === "dark"
-                  ? <Sun className="w-[15px] h-[15px]" />
-                  : <Moon className="w-[15px] h-[15px]" />
-                }
+                {isDark ? (
+                  <Sun className="w-4 h-4 text-accent" />
+                ) : (
+                  <Moon className="w-4 h-4 text-accent" />
+                )}
               </button>
+            ) : (
+              <div className="w-11 h-11 min-h-[44px] min-w-[44px]" aria-hidden="true" />
             )}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="w-8 h-8 flex items-center justify-center rounded-xl
-                         text-muted-foreground hover:text-foreground hover:bg-foreground/6
-                         transition-colors"
+              className="w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[8px]
+                         text-muted-foreground hover:text-foreground hover:bg-card
+                         transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              aria-label={isOpen ? "Close menu" : "Open menu"}
             >
               {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>

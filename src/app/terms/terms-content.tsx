@@ -49,7 +49,7 @@ export default function TermsContent() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-16 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-16 selection:bg-primary/30 selection:text-primary-foreground relative overflow-hidden">
       <div className="absolute top-[-5%] right-[-5%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] -z-20 pointer-events-none scale-150 rotate-45">

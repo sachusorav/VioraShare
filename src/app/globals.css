@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -44,30 +44,70 @@
 }
 
 :root,
+.light {
+  color-scheme: light;
+  /* ── Light Theme ── */
+  --background: #f8fafc;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #0c0d0e;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --accent: #0d9488;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --success: #16a34a;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #0d9488;
+
+  /* One card radius (12px), one button radius (8px) */
+  --radius: 12px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+
+  /* Spacing scale: 8 / 16 / 24 / 32 / 48 / 64px */
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #09090b;
+  --sidebar-primary: #0c0d0e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-accent-foreground: #0d9488;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #0d9488;
+}
+
 .dark {
-  /* One near-black shade for page background */
+  color-scheme: dark;
+  /* ── Dark Theme (Phase 2 Tokens) ── */
   --background: #0c0d0e;
-  /* Near-white for headings and body */
   --foreground: #f4f4f5;
-  /* One slightly lighter shade for cards (no third shade) */
   --card: #151719;
   --card-foreground: #f4f4f5;
   --popover: #151719;
   --popover-foreground: #f4f4f5;
-  /* Primary button: solid white on dark */
   --primary: #ffffff;
   --primary-foreground: #0c0d0e;
   --secondary: #151719;
   --secondary-foreground: #f4f4f5;
   --muted: #151719;
-  /* One muted grey (WCAG AA contrast > 6.5:1) */
   --muted-foreground: #a1a1aa;
-  /* One accent: muted teal */
   --accent: #2dd4bf;
   --accent-foreground: #0c0d0e;
-  /* Red: errors only */
   --destructive: #ef4444;
-  /* Green: success only */
   --success: #22c55e;
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.12);
@@ -118,8 +158,8 @@
   }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+  ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.25); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.4); }
 }
 
 @media (prefers-reduced-motion: reduce) {

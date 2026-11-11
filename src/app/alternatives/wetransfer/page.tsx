@@ -64,7 +64,7 @@ export default function WeTransferAlternativePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <main className="min-h-screen bg-black text-white selection:bg-blue-500/20 selection:text-blue-300">
+      <main className="min-h-screen bg-background text-foreground selection:bg-blue-500/20 selection:text-blue-300">
 
         {/* Hero */}
         <section className="relative overflow-hidden px-6 pt-24 pb-20 text-center">
