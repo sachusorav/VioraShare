@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 
-export function RoomCountdown({ expiresAt }: { expiresAt: string }) {
+export function RoomCountdown({
+  expiresAt,
+  onExpire,
+}: {
+  expiresAt: string;
+  onExpire?: () => void;
+}) {
   const [timeLeft, setTimeLeft] = useState("");
   const [isExpired, setIsExpired] = useState(false);
 
@@ -16,6 +22,7 @@ export function RoomCountdown({ expiresAt }: { expiresAt: string }) {
       if (diff <= 0) {
         setTimeLeft("EXPIRED");
         setIsExpired(true);
+        onExpire?.();
         return;
       }
 

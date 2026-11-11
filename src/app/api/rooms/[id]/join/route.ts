@@ -17,16 +17,25 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     });
 
     if (!room) {
-      return NextResponse.json({ error: "Room not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Room not found, or the passcode is incorrect. Check both and try again." },
+        { status: 404 }
+      );
     }
 
     if (new Date() > room.expiresAt) {
-      return NextResponse.json({ error: "Room has expired" }, { status: 410 });
+      return NextResponse.json(
+        { error: "Room not found, or the passcode is incorrect. Check both and try again." },
+        { status: 410 }
+      );
     }
 
     const isMatch = await bcrypt.compare(passcode, room.passcode);
     if (!isMatch) {
-      return NextResponse.json({ error: "Invalid passcode" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Room not found, or the passcode is incorrect. Check both and try again." },
+        { status: 401 }
+      );
     }
 
     const cookieStore = await cookies();

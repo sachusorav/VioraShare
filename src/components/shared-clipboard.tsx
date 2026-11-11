@@ -1,146 +1,245 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Copy, Plus, Link as LinkIcon, StickyNote } from "lucide-react";
+import { Copy, Plus, Link as LinkIcon, StickyNote, ClipboardPaste } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function SharedClipboard({ roomId, notes }: { roomId: string, notes: any[] }) {
-  const [content, setContent] = useState("");
-  
-  // Local state for optimistic notes
-  const [optimisticNotes, setOptimisticNotes] = useState<any[]>([]);
+// Safe clipboard write — works on HTTPS (Clipboard API) and HTTP/older browsers (execCommand fallback)
+async function writeToClipboard(text: string): Promise<void> {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    // execCommand fallback — synchronous, no permission required
+    const el = document.createElement("textarea");
+    el.value = text;
+    el.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(el);
+    if (!ok) throw new Error("execCommand copy failed");
+  }
+}
 
-  // Clear optimistic notes once the real ones arrive via SSE
+// Strict URL check — only http:// and https:// are valid links
+function isUrl(str: string): boolean {
+  try {
+    const url = new URL(str.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+interface Note {
+  id: string;
+  content: string;
+  createdAt: string;
+  roomId: string;
+}
+
+export function SharedClipboard({ roomId, notes }: { roomId: string; notes: Note[] }) {
+  const [content, setContent] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Pending optimistic notes (shown immediately, cleared once SSE confirms)
+  const [optimisticNotes, setOptimisticNotes] = useState<Note[]>([]);
+
+  // Efficient dedup: once a real note matches an optimistic one, drop it
   useEffect(() => {
-    if (notes.length > 0) {
-      setOptimisticNotes(prev => 
-        prev.filter(opt => !notes.some(n => n.id === opt.id || (n.content === opt.content && Math.abs(new Date(n.createdAt).getTime() - new Date(opt.createdAt).getTime()) < 5000)))
-      );
-    }
+    if (notes.length === 0) return;
+    const realSet = new Set(notes.map((n) => n.id));
+    setOptimisticNotes((prev) =>
+      prev.filter(
+        (opt) =>
+          !realSet.has(opt.id) &&
+          !notes.some(
+            (n) =>
+              n.content === opt.content &&
+              Math.abs(
+                new Date(n.createdAt).getTime() - new Date(opt.createdAt).getTime()
+              ) < 10_000
+          )
+      )
+    );
   }, [notes]);
 
-  const displayNotes = [...optimisticNotes, ...notes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  // Merge: real SSE notes + pending optimistic — newest first, no duplicates
+  const displayNotes: Note[] = (() => {
+    const seenIds = new Set(notes.map((n) => n.id));
+    const dedupedOptimistic = optimisticNotes.filter((o) => !seenIds.has(o.id));
+    return [...dedupedOptimistic, ...notes].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  })();
 
-  const addNote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
+  const addNote = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const trimmed = content.trim();
+    if (!trimmed) return;
 
-    const optimisticNote = {
+    const optimisticNote: Note = {
       id: `opt-${Date.now()}`,
-      content: content, // Removed .trim() to preserve intentional spacing if any, though trailing trim is usually fine.
+      content: trimmed,
       createdAt: new Date().toISOString(),
       roomId,
     };
 
     setContent("");
-    setOptimisticNotes(prev => [optimisticNote, ...prev]);
+    setOptimisticNotes((prev) => [optimisticNote, ...prev]);
+    textareaRef.current?.focus();
 
     try {
       const res = await fetch(`/api/rooms/${roomId}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: optimisticNote.content }),
+        body: JSON.stringify({ content: trimmed }),
       });
-      
-      if (!res.ok) throw new Error("Failed to add note");
-    } catch (error) {
-      toast.error("Failed to add note");
-      setOptimisticNotes(prev => prev.filter(n => n.id !== optimisticNote.id));
+      if (!res.ok) throw new Error("server error");
+    } catch {
+      // Rollback: restore text so the user doesn't lose what they typed
+      toast.error("Failed to save — your text has been restored.");
+      setOptimisticNotes((prev) => prev.filter((n) => n.id !== optimisticNote.id));
+      setContent(optimisticNote.content);
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
+  // Ctrl+Enter or Cmd+Enter submits
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      addNote();
+    }
   };
 
-  const isUrl = (str: string) => {
+  const copyNote = async (text: string) => {
     try {
-      new URL(str);
-      return true;
+      await writeToClipboard(text);
+      toast.success("Copied!");
     } catch {
-      return false;
+      toast.error("Copy failed — please select and copy manually.");
     }
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <form onSubmit={addNote} className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
+      {/* Input */}
+      <form onSubmit={addNote} className="flex flex-col gap-2">
         <Textarea
-          placeholder="Paste code snippets, links, or multi-line notes..."
+          ref={textareaRef}
+          placeholder="Paste a link, code snippet, or any text…"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="bg-background/50 backdrop-blur min-h-[120px] resize-none"
+          onKeyDown={handleKeyDown}
+          className="bg-background/50 backdrop-blur min-h-[100px] resize-none text-sm"
+          aria-label="Clipboard note content"
         />
-        <div className="flex justify-end">
-          <Button type="submit" disabled={!content.trim()} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            Add to Room Clipboard
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] text-muted-foreground/40 pl-0.5">
+            Ctrl+Enter to send
+          </span>
+          <Button type="submit" size="sm" disabled={!content.trim()} className="gap-1.5 h-9">
+            <Plus className="w-3.5 h-3.5" />
+            Add to Clipboard
           </Button>
         </div>
       </form>
 
-      <div className="grid grid-cols-1 gap-4">
+      {/* Notes list */}
+      <div className="flex flex-col gap-3">
         {displayNotes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
-            <StickyNote className="w-8 h-8 mb-2 opacity-50" />
-            <p>Your shared clipboard is empty.</p>
+          <div className="flex flex-col items-center justify-center py-14 gap-3 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
+            <ClipboardPaste className="w-7 h-7 opacity-30" />
+            <div className="text-center space-y-0.5">
+              <p className="text-sm font-medium">Clipboard is empty</p>
+              <p className="text-xs text-muted-foreground/50">
+                Paste a link or text above — it syncs instantly for everyone in the room.
+              </p>
+            </div>
           </div>
         ) : (
           <AnimatePresence initial={false}>
-            {displayNotes.map((note: any) => (
-              <motion.div
-                key={note.id}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                layout
-              >
-                <Card className={`bg-card/60 backdrop-blur shadow-sm hover:shadow-md transition-all border-border/50 group ${note.id.startsWith('opt-') ? 'border-primary/40' : ''}`}>
-                  <CardContent className="p-4 flex flex-col sm:flex-row items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 overflow-hidden w-full">
-                      <div className="p-2 bg-muted/50 rounded-lg shrink-0 mt-0.5">
-                        {isUrl(note.content) ? (
-                          <LinkIcon className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-blue-500'}`} />
-                        ) : (
-                          <StickyNote className={`w-4 h-4 ${note.id.startsWith('opt-') ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        {isUrl(note.content) ? (
-                          <a 
-                            href={note.content} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="text-sm font-medium text-blue-500 hover:underline break-all block"
-                          >
-                            {note.content}
-                          </a>
-                        ) : (
-                          <p className="text-sm font-medium whitespace-pre-wrap break-words leading-relaxed" title={note.content}>
-                            {note.content}
+            {displayNotes.map((note) => {
+              const isPending = note.id.startsWith("opt-");
+              const url = isUrl(note.content);
+
+              return (
+                <motion.div
+                  key={note.id}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: isPending ? 0.7 : 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  layout="position"
+                >
+                  <Card
+                    className={`bg-card/60 backdrop-blur shadow-sm border-border/50 group transition-all
+                      ${isPending ? "border-primary/40" : "hover:shadow-md"}`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        {/* Icon */}
+                        <div className="p-1.5 bg-muted/50 rounded-lg shrink-0 mt-0.5">
+                          {url ? (
+                            <LinkIcon
+                              className={`w-3.5 h-3.5 ${isPending ? "text-primary animate-pulse" : "text-primary"}`}
+                            />
+                          ) : (
+                            <StickyNote
+                              className={`w-3.5 h-3.5 ${isPending ? "text-primary animate-pulse" : "text-muted-foreground"}`}
+                            />
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="min-w-0 flex-1">
+                          {url ? (
+                            <a
+                              href={note.content}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              className="text-sm text-primary hover:underline underline-offset-2 break-all block"
+                            >
+                              {note.content}
+                            </a>
+                          ) : (
+                            <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+                              {note.content}
+                            </p>
+                          )}
+                          <p className="text-[10px] text-muted-foreground/40 mt-1.5 uppercase tracking-widest font-semibold">
+                            {isPending
+                              ? "Saving…"
+                              : new Date(note.createdAt).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
                           </p>
+                        </div>
+
+                        {/* Copy — always visible on mobile, hover-reveal on desktop */}
+                        {!isPending && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0 h-7 w-7 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => copyNote(note.content)}
+                            title="Copy to clipboard"
+                            aria-label="Copy note"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </Button>
                         )}
-                        <p className="text-[10px] text-muted-foreground mt-2 font-bold uppercase tracking-widest">
-                          {note.id.startsWith('opt-') ? "Saving to room..." : new Date(note.createdAt).toLocaleTimeString()}
-                        </p>
                       </div>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="shrink-0 h-8 w-8 sm:opacity-0 group-hover:opacity-100 transition-opacity self-end sm:self-start"
-                      onClick={() => copyToClipboard(note.content)}
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         )}
       </div>

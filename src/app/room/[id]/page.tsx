@@ -24,12 +24,25 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
     },
   });
 
-  if (!room) {
-    redirect("/");
-  }
-
-  if (new Date() > room.expiresAt) {
-    redirect("/"); 
+  if (!room || new Date() > room.expiresAt) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full p-8 rounded-[12px] bg-card border border-border space-y-4">
+          <h1 className="text-[22px] font-bold text-foreground">Room Expired</h1>
+          <p className="text-[16px] text-muted-foreground leading-[1.6]">
+            This room has expired. Its files have been deleted.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center h-10 px-4 rounded-[8px] bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

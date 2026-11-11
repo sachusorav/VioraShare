@@ -6,7 +6,8 @@ import { useRoomStream } from "@/hooks/useRoomStream";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Copy, UploadCloud, File, Download, SearchIcon, ImageIcon, FileTextIcon, ArchiveIcon, QrCode, StickyNote, User } from "lucide-react";
+import { Copy, UploadCloud, File, Download, ImageIcon, FileTextIcon, ArchiveIcon, QrCode, StickyNote, MessageSquare, Flame, Check } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { File as PrismaFile } from "@prisma/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -51,15 +52,41 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const [activeTab, setActiveTab] = useState("files");
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
   const [isZipping, setIsZipping] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [roomPasscode, setRoomPasscode] = useState<string | null>(null);
+  const [isRoomExpired, setIsRoomExpired] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    try {
+      const stored = sessionStorage.getItem(`viora_room_pass_${roomId}`);
+      if (stored) setRoomPasscode(stored);
+    } catch {}
     // Detect tab from hash
     const hash = window.location.hash.replace("#", "");
     if (["files", "clipboard", "chat"].includes(hash)) {
       setActiveTab(hash);
     }
-  }, []);
+  }, [roomId]);
+
+  const handleCopy = (key: string, text: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const el = document.createElement("textarea");
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -70,7 +97,12 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
   const liveFiles: PrismaFile[] = streamFiles.length > 0 ? streamFiles : initialFiles;
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
     for (const file of acceptedFiles) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("This file is over the 50 MB limit.");
+        continue;
+      }
       const tempId = `upload-${Date.now()}-${file.name}`;
       setUploadProgress((prev: Record<string, number>) => ({ ...prev, [tempId]: 0 }));
 
@@ -96,7 +128,6 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
       xhr.onload = () => {
         if (xhr.status === 200) {
           toast.success(`Uploaded ${file.name}`);
-          // SSE stream will pick up the new file automatically
         } else {
           toast.error(`Failed to upload ${file.name}`);
         }
@@ -120,7 +151,18 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
     }
   }, [roomId, selfDestruct]);
 
-  const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({ onDrop, noClick: true });
+  const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
+    onDrop,
+    noClick: true,
+    maxSize: 50 * 1024 * 1024,
+    onDropRejected: (fileRejections) => {
+      for (const rej of fileRejections) {
+        if (rej.file.size > 50 * 1024 * 1024) {
+          toast.error("This file is over the 50 MB limit.");
+        }
+      }
+    },
+  });
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith("image/")) return <ImageIcon className="w-8 h-8 text-blue-500" />;
@@ -129,11 +171,28 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
     return <File className="w-8 h-8 text-muted-foreground" />;
   };
 
-  const copyRoomLink = () => {
+  const copyRoomLink = async () => {
     const url = `${window.location.origin}/?join=${roomId}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Room link copied to clipboard!");
-  }
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // HTTP / old-browser fallback
+        const el = document.createElement("textarea");
+        el.value = url;
+        el.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+        document.body.appendChild(el);
+        el.focus();
+        el.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(el);
+        if (!ok) throw new Error("execCommand failed");
+      }
+      toast.success("Room link copied!");
+    } catch {
+      toast.error("Could not copy — please copy the URL manually.");
+    }
+  };
 
   const downloadAllFiles = async () => {
     if (liveFiles.length === 0) return;
@@ -169,40 +228,125 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
     }
   };
 
+  if (isRoomExpired) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full p-8 rounded-[12px] bg-card border border-border space-y-4">
+          <h1 className="text-[22px] font-bold text-foreground">Room Expired</h1>
+          <p className="text-[16px] text-muted-foreground leading-[1.6]">
+            This room has expired. Its files have been deleted.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center h-10 px-4 rounded-[8px] bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div {...getRootProps()} className={`flex flex-col gap-6 flex-1${isDragActive ? " ring-2 ring-primary ring-inset rounded-xl" : ""}`}>
+    <div {...getRootProps()} className={`flex flex-col gap-6 flex-1${isDragActive ? " ring-2 ring-accent ring-inset rounded-[12px]" : ""}`}>
       <input {...getInputProps()} />
       {/* Room Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-[8px] bg-card border border-border flex items-center justify-center shrink-0">
             <Image src="/icon.png" alt="Viora" width={20} height={20} />
           </div>
           <div>
-            <h1 className="text-xl font-heading font-bold tracking-tight leading-tight">
-              Room <span className="font-mono tracking-widest">{roomId}</span>
+            <h1 className="text-xl font-bold tracking-tight leading-tight text-foreground">
+              Room <span className="font-mono font-bold tracking-widest text-2xl text-foreground">{roomId}</span>
             </h1>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
               <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Live</span>
-              <span className={`text-[10px] font-semibold ${connected ? "text-green-500" : "text-orange-400 animate-pulse"}`}>
+              <span className={`text-[10px] font-semibold ${connected ? "text-success" : "text-muted-foreground animate-pulse"}`}>
                 · {connected ? "Connected" : "Reconnecting..."}
               </span>
             </div>
           </div>
         </div>
-        <RoomCountdown expiresAt={expiresAt} />
+        <RoomCountdown expiresAt={expiresAt} onExpire={() => setIsRoomExpired(true)} />
       </div>
 
       {/* Action bar */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Button variant="outline" size="sm" onClick={copyRoomLink} className="bg-card/50 backdrop-blur h-9 text-sm gap-2">
-          <Copy className="w-3.5 h-3.5" />
-          Copy Link
+        {/* Copy Room ID */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleCopy("roomId", roomId)}
+          className="h-9 text-xs gap-1.5"
+        >
+          {copiedKey === "roomId" ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-success" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              Copy Room ID
+            </>
+          )}
         </Button>
+
+        {/* Copy Passcode if available */}
+        {roomPasscode && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleCopy("passcode", roomPasscode)}
+            className="h-9 text-xs gap-1.5"
+          >
+            {copiedKey === "passcode" ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-success" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                Copy Passcode
+              </>
+            )}
+          </Button>
+        )}
+
+        {/* Copy Combined Share Text */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const origin = typeof window !== "undefined" ? window.location.origin : "";
+            const text = roomPasscode
+              ? `Room ID: ${roomId}\nPasscode: ${roomPasscode}\nJoin: ${origin}/?join=${roomId}`
+              : `Room ID: ${roomId}\nJoin: ${origin}/?join=${roomId}`;
+            handleCopy("share", text);
+          }}
+          className="h-9 text-xs gap-1.5"
+        >
+          {copiedKey === "share" ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-success" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              Copy Share Text
+            </>
+          )}
+        </Button>
+
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="bg-card/50 backdrop-blur h-9 text-sm gap-2">
+            <Button variant="outline" size="sm" className="h-9 text-xs gap-1.5">
               <QrCode className="w-3.5 h-3.5" />
               QR Code
             </Button>
@@ -211,10 +355,10 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             <DialogHeader>
               <DialogTitle className="text-center text-lg font-heading">Scan to Join</DialogTitle>
             </DialogHeader>
-            <div className="bg-white p-4 rounded-2xl shadow-sm mt-2">
+            <div className="bg-white p-4 rounded-[12px] shadow-sm mt-2">
               <QRCodeSVG value={typeof window !== 'undefined' ? `${window.location.origin}/?join=${roomId}` : ""} size={180} />
             </div>
-            <p className="text-center text-xs text-muted-foreground mt-3">Scan on any device to join room <span className="font-mono font-bold">{roomId}</span>.</p>
+            <p className="text-center text-xs text-muted-foreground mt-3">Scan on any device to join room <span className="font-mono font-bold text-foreground">{roomId}</span>.</p>
           </DialogContent>
         </Dialog>
       </div>
@@ -230,7 +374,7 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
             Clipboard
           </TabsTrigger>
           <TabsTrigger value="chat" className="gap-1.5 text-sm h-8">
-            <User className="w-3.5 h-3.5" />
+            <MessageSquare className="w-3.5 h-3.5" />
             Chat
           </TabsTrigger>
         </TabsList>
@@ -270,8 +414,8 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
                   checked={selfDestruct}
                   onCheckedChange={setSelfDestruct}
                 />
-                <Label htmlFor="self-destruct" className="text-xs font-medium cursor-pointer text-muted-foreground">
-                  💥 Self-destruct after 1 download
+                <Label htmlFor="self-destruct" className="flex items-center gap-1.5 text-xs font-medium cursor-pointer text-muted-foreground">
+                  <Flame className="w-3.5 h-3.5 text-muted-foreground" /> Self-destruct after 1 download
                 </Label>
               </div>
             </div>
@@ -296,25 +440,28 @@ export function RoomDashboard({ initialFiles, roomId, expiresAt }: { initialFile
               {/* Active Uploads */}
               {Object.keys(uploadProgress).length > 0 && (
                 <div className="mb-6 space-y-3">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Uploading...</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Uploading files...</p>
                   {Object.entries(uploadProgress).map(([tempId, progress]) => (
-                    <Card key={tempId} className="bg-primary/5 border-primary/20 backdrop-blur-sm">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium truncate max-w-[200px]">{tempId.split('-').slice(2).join('-')}</span>
-                          <span className="text-[10px] font-mono">{Math.round(progress)}%</span>
-                        </div>
-                        <Progress value={progress} className="h-1" />
-                      </CardContent>
-                    </Card>
+                    <div key={tempId} className="p-4 rounded-[12px] bg-card border border-border space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-foreground truncate max-w-[280px]">
+                          {tempId.split('-').slice(2).join('-')}
+                        </span>
+                        <span className="text-xs font-mono text-muted-foreground">{Math.round(progress)}%</span>
+                      </div>
+                      <Progress value={progress} className="h-1.5" />
+                    </div>
                   ))}
                 </div>
               )}
 
               {liveFiles.length === 0 && Object.keys(uploadProgress).length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground border rounded-xl border-dashed bg-muted/10">
-                  <SearchIcon className="w-8 h-8 mb-2 opacity-50" />
-                  <p>No files uploaded yet.</p>
+                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground border rounded-xl border-dashed bg-muted/10 gap-3">
+                  <UploadCloud className="w-8 h-8 opacity-30" />
+                  <div className="text-center space-y-0.5">
+                    <p className="text-sm font-medium">No files yet</p>
+                    <p className="text-xs text-muted-foreground/50">Drag & drop or click above to upload</p>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

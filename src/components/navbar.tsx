@@ -96,21 +96,21 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold
-                    rounded-xl transition-all duration-150
+                  className={`relative flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-medium
+                    rounded-[8px] transition-all duration-150
                     group whitespace-nowrap
                     ${active
-                      ? "text-foreground bg-foreground/8"
-                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "text-accent bg-accent/10"
+                      : "text-muted-foreground hover:text-accent hover:bg-card"
                     }`}
                 >
-                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <Icon className="w-4 h-4 shrink-0" />
                   {link.label}
                   {/* Underline indicator */}
                   <span
                     className={`absolute bottom-0.5 left-3.5 right-3.5 h-[2px] rounded-full
-                      bg-foreground transition-all duration-200 origin-left
-                      ${active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-30"}`}
+                      bg-accent transition-all duration-200 origin-left
+                      ${active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-40"}`}
                   />
                 </Link>
               );
@@ -140,13 +140,13 @@ export function Navbar() {
             {/* CTA — Start Sharing */}
             <button
               onClick={handleStartSharing}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold
-                         bg-foreground text-background
-                         hover:bg-foreground/85 active:scale-[0.97]
-                         transition-all duration-150 shadow-md shadow-black/20
+              className="flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-semibold
+                         bg-primary text-primary-foreground
+                         hover:bg-primary/90 active:scale-[0.98]
+                         transition-all duration-150 shadow-sm
                          whitespace-nowrap"
             >
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-4 h-4 text-primary-foreground" />
               Start Sharing
             </button>
           </div>
@@ -180,9 +180,9 @@ export function Navbar() {
 
       {/* ── Mobile drawer ── */}
       {isOpen && (
-        <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl
+        <div className="md:hidden border-t border-border bg-card
                         animate-in slide-in-from-top-2 duration-150">
-          <div className="max-w-6xl mx-auto px-4 py-3 space-y-0.5">
+          <div className="max-w-6xl mx-auto px-4 py-3 space-y-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const active = pathname === link.href;
@@ -191,10 +191,10 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition-colors
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors
                     ${active
-                      ? "bg-foreground/8 text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "bg-accent/10 text-accent font-semibold"
+                      : "text-muted-foreground hover:text-accent hover:bg-background/40"
                     }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -206,12 +206,12 @@ export function Navbar() {
             <div className="pt-2 pb-1">
               <button
                 onClick={handleStartSharing}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl
-                           text-sm font-bold bg-foreground text-background
-                           hover:bg-foreground/85 transition-all active:scale-[0.98]
-                           shadow-md shadow-black/20"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px]
+                           text-sm font-semibold bg-primary text-primary-foreground
+                           hover:bg-primary/90 transition-all active:scale-[0.98]
+                           shadow-sm"
               >
-                <Zap className="w-4 h-4" />
+                <Zap className="w-4 h-4 text-primary-foreground" />
                 Start Sharing
               </button>
             </div>
